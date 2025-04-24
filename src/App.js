@@ -17,6 +17,8 @@ import ClinicInfo from "./pages/clinicinfo";
 import Service from "./pages/service";
 import Footer from "./pages/footer";
 import Cages from "./pages/Cages";
+import Login from "./login/login";
+import Register from "./login/register";
 
 const Layout = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -85,10 +87,18 @@ const Layout = () => {
           </Box>
 
           <Stack direction="row" spacing={1}>
-            <Button variant="contained" sx={{ bgcolor: "#004ba0", color: "#fff", borderRadius: 2 }}>
+            <Button 
+              variant="contained" 
+              sx={{ bgcolor: "#004ba0", color: "#fff", borderRadius: 2 }}
+              onClick={() => navigate("/login")}
+            >
               Login
             </Button>
-            <Button variant="contained" sx={{ bgcolor: "#ff9800", color: "#fff", borderRadius: 2 }}>
+            <Button 
+              variant="contained" 
+              sx={{ bgcolor: "#ff9800", color: "#fff", borderRadius: 2 }}
+              onClick={() => navigate("/register")}
+            >
               Register
             </Button>
           </Stack>
@@ -147,6 +157,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/Cages" element={<Cages />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );
