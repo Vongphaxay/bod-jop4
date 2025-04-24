@@ -91,7 +91,7 @@ const Layout = () => {
                 <MenuItem onClick={handleClose}>ປິ່ນປົວສັດລ້ຽງ</MenuItem>
               </Menu>
 
-              {/* <Button color="inherit" onClick={() => navigate("/Cages")}>ລາຍການຈອງ</Button> */}
+              <Button color="inherit" onClick={() => navigate("/Cages")}>ລາຍການຈອງ</Button>
               <Button color="inherit">ຕິດຕໍ່ສອບຖາມ</Button>
             </Box>
           )}
