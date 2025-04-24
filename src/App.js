@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -10,7 +10,7 @@ import {
   MenuItem,
   Grow
 } from "@mui/material";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import PetsIcon from "@mui/icons-material/Pets";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ClinicInfo from "./pages/clinicinfo";
@@ -24,10 +24,15 @@ const Layout = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if current page is login or register
+  const isAuthPage = location.pathname === "/login" || location.pathname === "/register";
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+  
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -43,65 +48,73 @@ const Layout = () => {
               alignItems: "center",
               gap: 1,
               color: "#552619",
-              fontWeight: 600
+              fontWeight: 600,
+              cursor: "pointer"
             }}
+            onClick={() => navigate("/")}
           >
             <PetsIcon fontSize="large" sx={{ color: "#552619" }} />
             DR. P VETERINARY
           </Typography>
 
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <Button color="inherit" onClick={() => navigate("/")}>ໜ້າຫຼັກ</Button>
+          {/* Only show menu if not on login/register pages */}
+          {!isAuthPage && (
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <Button color="inherit" onClick={() => navigate("/")}>ໜ້າຫຼັກ</Button>
 
-            <Button
-              color="inherit"
-              onClick={handleClick}
-              endIcon={
-                <ArrowDropDownIcon
-                  sx={{
-                    transition: "transform 0.3s ease",
-                    transform: open ? "rotate(180deg)" : "rotate(0deg)"
-                  }}
-                />
-              }
-            >
-              ບໍລິການ
-            </Button>
+              <Button
+                color="inherit"
+                onClick={handleClick}
+                endIcon={
+                  <ArrowDropDownIcon
+                    sx={{
+                      transition: "transform 0.3s ease",
+                      transform: open ? "rotate(180deg)" : "rotate(0deg)"
+                    }}
+                  />
+                }
+              >
+                ບໍລິການ
+              </Button>
 
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              TransitionComponent={Grow}
-              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-              transformOrigin={{ vertical: "top", horizontal: "left" }}
-            >
-              <MenuItem onClick={handleClose}>ຝາກສັດລ້ຽງ</MenuItem>
-              <MenuItem onClick={handleClose}>ອາບນ້ຳສັດລ້ຽງ</MenuItem>
-              <MenuItem onClick={handleClose}>ຕັດຂົນສັດລ້ຽງ</MenuItem>
-              <MenuItem onClick={handleClose}>ປິ່ນປົວສັດລ້ຽງ</MenuItem>
-            </Menu>
+              <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                TransitionComponent={Grow}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                transformOrigin={{ vertical: "top", horizontal: "left" }}
+              >
+                <MenuItem onClick={handleClose}>ຝາກສັດລ້ຽງ</MenuItem>
+                <MenuItem onClick={handleClose}>ອາບນ້ຳສັດລ້ຽງ</MenuItem>
+                <MenuItem onClick={handleClose}>ຕັດຂົນສັດລ້ຽງ</MenuItem>
+                <MenuItem onClick={handleClose}>ປິ່ນປົວສັດລ້ຽງ</MenuItem>
+              </Menu>
 
-            <Button color="inherit" onClick={() => navigate("/Cages")}>ລາຍການຈອງ</Button>
-            <Button color="inherit">ຕິດຕໍ່ສອບຖາມ</Button>
-          </Box>
+              {/* <Button color="inherit" onClick={() => navigate("/Cages")}>ລາຍການຈອງ</Button> */}
+              <Button color="inherit">ຕິດຕໍ່ສອບຖາມ</Button>
+            </Box>
+          )}
 
-          <Stack direction="row" spacing={1}>
-            <Button 
-              variant="contained" 
-              sx={{ bgcolor: "#004ba0", color: "#fff", borderRadius: 2 }}
-              onClick={() => navigate("/login")}
-            >
-              Login
-            </Button>
-            <Button 
-              variant="contained" 
-              sx={{ bgcolor: "#ff9800", color: "#fff", borderRadius: 2 }}
-              onClick={() => navigate("/register")}
-            >
-              Register
-            </Button>
-          </Stack>
+          {/* Only show login/register buttons if not on login/register pages */}
+          {!isAuthPage && (
+            <Stack direction="row" spacing={1}>
+              <Button 
+                variant="contained" 
+                sx={{ bgcolor: "#004ba0", color: "#fff", borderRadius: 2 }}
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </Button>
+              <Button 
+                variant="contained" 
+                sx={{ bgcolor: "#ff9800", color: "#fff", borderRadius: 2 }}
+                onClick={() => navigate("/register")}
+              >
+                Register
+              </Button>
+            </Stack>
+          )}
         </Toolbar>
       </AppBar>
     </>
