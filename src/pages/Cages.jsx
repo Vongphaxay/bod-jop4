@@ -15,6 +15,12 @@ const Cages = () => {
   const [selectedCage, setSelectedCage] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    date: "",
+    time: "",
+  });
+  const [selectedOptions, setSelectedOptions] = useState([]);
   const [bookingData, setBookingData] = useState({
     startDate: new Date(),
     endDate: new Date(new Date().setDate(new Date().getDate() + 1)),
@@ -26,10 +32,8 @@ const Cages = () => {
     petGender: "",
     petSize: "",
     ownerName: "",
-    phone: ""
+    price: 0, // ราคา
   });
-
-  // Form validation state
   const [formErrors, setFormErrors] = useState({});
 
   const handleDetailsOpen = (cage) => {
@@ -44,13 +48,42 @@ const Cages = () => {
   const handleBookingOpen = (cage) => {
     setSelectedCage(cage);
     setBookingOpen(true);
-    // Reset form errors when opening the form
-    setFormErrors({});
+    setFormErrors({});  // ลบ error เมื่อเปิดฟอร์ม
   };
 
-  const handleBookingClose = () => {
-    setBookingOpen(false);
+  // ฟังก์ชันล้างข้อมูลทั้งหมด
+  const resetBookingData = () => {
+    setFormData({
+      name: "",
+      date: "",
+      time: "",
+    });
+
+    setBookingData({
+      startDate: new Date(),
+      endDate: new Date(new Date().setDate(new Date().getDate() + 1)),
+      days: 1,
+      petType: "",
+      petName: "",
+      petAge: "",
+      petColor: "",
+      petGender: "",
+      petSize: "",
+      ownerName: "",
+      phone: "",
+      price: 0,  // รีเซตราคากลับเป็น 0
+    });
+
+    setSelectedOptions([]);  // ลบตัวเลือกที่เลือกไว้
+    setFormErrors({});  // ลบข้อผิดพลาด
   };
+
+  // ฟังก์ชันปิด booking dialog และล้างข้อมูล
+  const handleBookingClose = () => {
+    resetBookingData();  // ล้างข้อมูลทั้งหมดก่อนปิด dialog
+    setBookingOpen(false);  // ปิด dialog
+  };
+
 
   const calculateDays = (start, end) => {
     const difference = end.getTime() - start.getTime();
@@ -90,22 +123,34 @@ const Cages = () => {
     if (!bookingData.petType) errors.petType = "ກະລຸນາເລືອກປະເພດສັດລ້ຽງ";
     if (!bookingData.petGender) errors.petGender = "ກະລຸນາເລືອກເພດສັດລ້ຽງ";
     if (!bookingData.petSize) errors.petSize = "ກະລຸນາເລືອກຂະໜາດສັດລ້ຽງ";
-    if (!bookingData.ownerName) errors.ownerName = "ກະລຸນາປ້ອນຊື່ຜູ້ຈອງ";
-    if (!bookingData.phone) errors.phone = "ກະລຸນາປ້ອນເບີໂທຕິດຕໍ່";
+    if (!bookingData.ownerName) errors.ownerName = "ກະລຸນາປ້ອນລະຫັດຜູ້ຈອງ";
+    if (!bookingData.petColor) errors.petColor = "ກະລຸນາປ້ອນສີສັດລ້ຽງ";
+    if (!bookingData.petAge) errors.petAge = "ກະລຸນາປ້ອນອາຍຸສັດລ້ຽງ";
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
   // Handle form submission
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+
   const handleSubmitBooking = () => {
     if (validateForm()) {
-      // Process the booking submission here
       console.log("Booking submitted:", bookingData);
-      // Close the dialog after successful submission
-      handleBookingClose();
-      // You could also show a success notification
+      setSuccessDialogOpen(true); // ✅ แค่เปิด Dialog ก่อน
     }
+  };
+  
+  // เมื่อผู้ใช้กด OK ใน Dialog ค่อยปิดฟอร์มและรีเซตข้อมูล
+  const handleSuccessOk = () => {
+    setSuccessDialogOpen(false); // ปิด dialog
+    handleBookingClose();        // ปิดฟอร์ม + รีเซตข้อมูล
+  };
+  
+  // Handling dialog close
+  const handleDialogClose = (event, reason) => {
+    if (reason === "backdropClick" || reason === "escapeKeyDown") return;
+    setSuccessDialogOpen(false); // Close the success dialog
   };
 
   const priceMap = {
@@ -491,7 +536,7 @@ const Cages = () => {
                           </Box>
                         </Stack>
                         {/* ຂໍ້ມູນສັດລ້ຽງ */}
-                        <Box sx={{ flex: 1, minWidth: 350, maxWidth: 500, mt: 5}}>
+                        <Box sx={{ flex: 1, minWidth: 350, maxWidth: 500, mt: 5 }}>
                           <Typography
                             variant="h6"
                             sx={{
@@ -694,6 +739,44 @@ const Cages = () => {
                 >
                   ຢືນຢັນການຈອງ
                 </Button>
+
+                {/* ✅ Success Dialog */}
+                <Dialog
+                  open={successDialogOpen}
+                  onClose={handleDialogClose} // Pass the function directly here
+                >
+                  <DialogContent
+                    sx={{
+                      textAlign: "center",
+                      py: 4,
+                      px: 5,
+                      backgroundColor: "#f9f3ec",
+                      borderRadius: 2,
+                    }}
+                  >
+                    <CheckCircleIcon sx={{ fontSize: 60, color: "green", mb: 2 }} />
+                    <Typography variant="h6" fontWeight="bold" color="#5b2b0f">
+                      ການຈອງສຳເລັດ
+                    </Typography>
+                    <Typography sx={{ mt: 1, color: "#5b2b0f" }}>
+                      ການຈອງຖືກບັນທຶກແລ້ວ ກົດ OK ເພື່ອກັບໄປໂປຣໄຟລ໌
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        mt: 3,
+                        backgroundColor: "#7D9B67",
+                        fontWeight: "bold",
+                        borderRadius: 2,
+                        px: 5,
+                        "&:hover": { backgroundColor: "#6a8858" },
+                      }}
+                      onClick={handleSuccessOk}
+                    >
+                      OK
+                    </Button>
+                  </DialogContent>
+                </Dialog>
               </Stack>
             </DialogActions>
           </Dialog>

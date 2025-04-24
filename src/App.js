@@ -19,6 +19,7 @@ import Footer from "./pages/footer";
 import Cages from "./pages/Cages";
 import Login from "./login/login";
 import Register from "./login/register";
+import ReservationList from "./pages/Reservationlist";
 
 const Layout = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -91,7 +92,7 @@ const Layout = () => {
                 <MenuItem onClick={handleClose}>ປິ່ນປົວສັດລ້ຽງ</MenuItem>
               </Menu>
 
-              <Button color="inherit" onClick={() => navigate("/Cages")}>ລາຍການຈອງ</Button>
+              <Button color="inherit" onClick={() => navigate("/src/pages/Reservationlist.jsx")}>ລາຍການຈອງ</Button>
               <Button color="inherit">ຕິດຕໍ່ສອບຖາມ</Button>
             </Box>
           )}
@@ -172,6 +173,7 @@ const App = () => {
         <Route path="/Cages" element={<Cages />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/reservationlist" element={<ReservationList />} />
       </Routes>
     </BrowserRouter>
   );
