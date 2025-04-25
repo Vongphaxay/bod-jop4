@@ -1,129 +1,136 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
-  Tabs,
-  Tab,
   Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
   Card,
-  CardContent,
-  CardMedia,
-  Chip,
-  Grid,
+  CardContent
 } from '@mui/material';
 
-const reservations = {
-  upcoming: [
-    {
-      hotel: 'Lanexang Hotel',
-      checkIn: 'April 5, 2025',
-      checkOut: 'April 8, 2025',
-      status: 'Confirmed',
-      price: 120,
-      image: 'https://via.placeholder.com/100x100?text=Hotel1',
-    },
-    {
-      hotel: 'Amari Hotel',
-      checkIn: 'March 15, 2025',
-      checkOut: 'March 18, 2025',
-      status: 'Confirmed',
-      price: 80,
-      image: 'https://via.placeholder.com/100x100?text=Hotel2',
-    },
-  ],
-  past: [],
-  waiting: [
-    {
-      hotel: 'Lanexang Hotel',
-      checkIn: 'April 5, 2025',
-      checkOut: 'April 8, 2025',
-      status: 'waiting',
-      price: 120,
-      image: 'https://via.placeholder.com/100x100?text=Hotel1',
-    },
-    {
-      hotel: 'Amari Hotel',
-      checkIn: 'March 15, 2025',
-      checkOut: 'March 18, 2025',
-      status: 'waiting',
-      price: 80,
-      image: 'https://via.placeholder.com/100x100?text=Hotel2',
-    },
-  ],
-};
+// ຂໍ້ມູນຕົວຢ່າງ
+const petReservations = [
+  {
+    bookingDate: '12/04/2025',
+    startDate: '20/04/2025',
+    endDate: '25/04/2025',
+    petName: 'ໂຕນີ',
+    age: '3 ປີ',
+    color: 'ສີນ້ຳຕານ',
+    gender: 'ຜູ້',
+    petType: 'ໝາ',
+    petSize: 'ກາງ',
+    totalPrice: '500,000 ກີບ'
+  },
+  {
+    bookingDate: '15/04/2025',
+    startDate: '01/05/2025',
+    endDate: '05/05/2025',
+    petName: 'ມີມີ່',
+    age: '2 ປີ',
+    color: 'ສີຂາວ',
+    gender: 'ແມ່',
+    petType: 'ແມວ',
+    petSize: 'ນ້ອຍ',
+    totalPrice: '400,000 ກີບ'
+  },
+  {
+    bookingDate: '18/04/2025',
+    startDate: '10/05/2025',
+    endDate: '15/05/2025',
+    petName: 'ລັກກີ້',
+    age: '4 ປີ',
+    color: 'ສີດຳ',
+    gender: 'ຜູ້',
+    petType: 'ໝາ',
+    petSize: 'ໃຫຍ່',
+    totalPrice: '650,000 ກີບ'
+  }
+];
 
-function ReservationCard({ data }) {
+const tableColumns = [
+  { id: 'bookingDate', label: 'ມື້ຈອງ', minWidth: 60 },
+  { id: 'startDate', label: 'ວັນທີເລີ່ມ', minWidth: 60 },
+  { id: 'endDate', label: 'ວັນທີ່ສິ້ນສຸດ', minWidth: 80 },
+  { id: 'petName', label: 'ຊື່ສັດລ້ຽງ', minWidth: 80 },
+  { id: 'age', label: 'ອາຍຸ', minWidth: 50 },
+  { id: 'color', label: 'ສີ', minWidth: 60 },
+  { id: 'gender', label: 'ເພດສັດລ້ຽງ', minWidth: 60 },
+  { id: 'petType', label: 'ປະເພດສັດລ້ຽງ', minWidth: 80 },
+  { id: 'petSize', label: 'ຂະໜາດສັດລ້ຽງ', minWidth: 60 },
+  { id: 'totalPrice', label: 'ລາຄາລວມ', minWidth: 100 }
+];
+
+export default function Reservation() {
   return (
-    <Card sx={{ display: 'flex', mb: 2, boxShadow: 3 }}>
-      <CardMedia
-        component="img"
-        image={data.image}
-        alt={data.hotel}
-        sx={{ width: 100 }}
-      />
-      <CardContent sx={{ flex: 1 }}>
-        <Typography variant="h6">{data.hotel}</Typography>
-        <Typography variant="body2">
-          <strong>Check-in:</strong> {data.checkIn} <br />
-          <strong>Check-out:</strong> {data.checkOut} <br />
-          <strong>Status:</strong>{' '}
-          <Chip
-            label={data.status}
-            color={
-              data.status === 'Confirmed'
-                ? 'success'
-                : data.status === 'waiting'
-                ? 'warning'
-                : 'default'
-            }
-            size="small"
-            sx={{ ml: 1 }}
-          />
-        </Typography>
-        <Typography color="error" mt={1}>
-          Price per Night: USD {data.price}
-        </Typography>
-      </CardContent>
-    </Card>
-  );
-}
-
-export default function ReservationList() {
-  const [tab, setTab] = useState(0);
-
-  const handleChange = (event, newValue) => {
-    setTab(newValue);
-  };
-
-  const tabLabels = ['การจองที่กำลังจะมาถึง', 'การจองที่ผ่านมา', 'กำลังรอ'];
-
-  const tabData = [
-    reservations.upcoming,
-    reservations.past,
-    reservations.waiting,
-  ];
-
-  return (
-    <Box sx={{ width: '100%', p: 2 }}>
-      <Typography variant="h5" mb={2} textAlign="center">
-        ลายทางจองของฉัน
+    <Box sx={{ width: '100%', maxWidth: '1200px', mx: 'auto', p: 3 }}>
+      <Typography variant="h5" mb={2} textAlign="center" fontWeight="bold">
+        ລາຍການຈອງຄິວຂອງຂ້ອຍ
       </Typography>
-      <Tabs value={tab} onChange={handleChange} centered>
-        {tabLabels.map((label, index) => (
-          <Tab label={label} key={index} />
-        ))}
-      </Tabs>
 
-      <Box mt={3}>
-        {tabData[tab].length > 0 ? (
-          tabData[tab].map((item, index) => (
-            <ReservationCard key={index} data={item} />
-          ))
-        ) : (
-          <Typography align="center" color="text.secondary">
-            No data
-          </Typography>
-        )}
-      </Box>
+      <Card elevation={4} sx={{ borderRadius: 3 }}>
+        <CardContent>
+          <TableContainer component={Paper} sx={{ borderRadius: 2, overflowX: 'auto' }}>
+            <Table sx={{ minWidth: 800 }} size="small" aria-label="pet reservation table">
+              <TableHead>
+                <TableRow sx={{ backgroundColor: '#e0f7fa' }}>
+                  {tableColumns.map((column) => (
+                    <TableCell
+                      key={column.id}
+                      align="center"
+                      sx={{
+                        minWidth: column.minWidth,
+                        fontWeight: 'bold',
+                        fontSize: '0.75rem',
+                        px: 1,
+                        py: 0.5,
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      {column.label}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {petReservations.length > 0 ? (
+                  petReservations.map((reservation, index) => (
+                    <TableRow
+                      key={index}
+                      sx={{
+                        '&:nth-of-type(odd)': { backgroundColor: '#fafafa' },
+                        '&:hover': { backgroundColor: '#f1f1f1' },
+                        transition: 'background-color 0.3s ease'
+                      }}
+                    >
+                      {tableColumns.map((col) => (
+                        <TableCell
+                          align="center"
+                          key={col.id}
+                          sx={{ fontSize: '0.75rem', px: 1, py: 0.5 }}
+                        >
+                          {reservation[col.id]}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={10} align="center">
+                      ບໍ່ມີຂໍ້ມູນ
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </CardContent>
+      </Card>
     </Box>
   );
 }

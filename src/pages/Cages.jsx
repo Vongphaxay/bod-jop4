@@ -555,8 +555,8 @@ const Cages = () => {
 
                           <Grid container spacing={2}>
                             {[{ label: "ຊື່ສັດລ້ຽງ", key: "petName", required: true },
-                            { label: "ອາຍຸ", key: "petAge" },
-                            { label: "ສີ", key: "petColor" },]
+                            { label: "ອາຍຸ", key: "petAge", required: true },
+                            { label: "ສີ", key: "petColor", required: true },]
                               .map((field) => (
                                 <Grid item xs={6} key={field.key}>
                                   <TextField
