@@ -15,10 +15,30 @@ import PetsIcon from "@mui/icons-material/Pets";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { loginCustomer } from "../services/customer.service";
+import Cookies from 'js-cookie';
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
+
+  const APILOGIN = async () => {
+    try {
+      const response = await loginCustomer(username, password);
+      console.log(response);
+  
+      // ✅ Set cookies
+      Cookies.set("name", response.name);
+      Cookies.set("cus_id", response.cus_id);
+      Cookies.set("accessToken", response.accessToken, { secure: true, sameSite: 'strict' });
+  
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = (event) => event.preventDefault();
@@ -76,6 +96,12 @@ const Login = () => {
           label="ຊື່ຜູ້ໃຊ້"
           variant="outlined"
           fullWidth
+          value={username}
+          onChange={(e) => {
+            setUsername(e.target.value);
+            console.log("Username:", e.target.value);
+          }}
+
           sx={{ mb: 3 }}
           InputProps={{
             sx: { borderRadius: 2 }
@@ -87,6 +113,11 @@ const Login = () => {
           type={showPassword ? "text" : "password"}
           variant="outlined"
           fullWidth
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            console.log("Password:", e.target.value);
+          }}
           sx={{ mb: 4 }}
           InputProps={{
             sx: { borderRadius: 2 },
@@ -117,6 +148,12 @@ const Login = () => {
             "&:hover": {
               bgcolor: "#003b80"
             }
+          }}
+          onClick={() => {
+            console.log("Login Data:", {
+              username, password
+            });
+            APILOGIN();
           }}
         >
           ເຂົ້າສູ່ລະບົບ

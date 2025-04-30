@@ -16,7 +16,7 @@ import {
 // ຂໍ້ມູນຕົວຢ່າງ
 const petReservations = [
   {
-    bookingDate: '12/04/2025',
+    bookingDate: '5 ມື້',
     startDate: '20/04/2025',
     endDate: '25/04/2025',
     petName: 'ໂຕນີ',
@@ -28,7 +28,7 @@ const petReservations = [
     totalPrice: '500,000 ກີບ'
   },
   {
-    bookingDate: '15/04/2025',
+    bookingDate: '4 ມື້',
     startDate: '01/05/2025',
     endDate: '05/05/2025',
     petName: 'ມີມີ່',
@@ -40,7 +40,7 @@ const petReservations = [
     totalPrice: '400,000 ກີບ'
   },
   {
-    bookingDate: '18/04/2025',
+    bookingDate: '5 ມື້',
     startDate: '10/05/2025',
     endDate: '15/05/2025',
     petName: 'ລັກກີ້',
@@ -54,7 +54,7 @@ const petReservations = [
 ];
 
 const tableColumns = [
-  { id: 'bookingDate', label: 'ມື້ຈອງ', minWidth: 60 },
+  { id: 'bookingDate', label: 'ຈອງ', minWidth: 60 },
   { id: 'startDate', label: 'ວັນທີເລີ່ມ', minWidth: 60 },
   { id: 'endDate', label: 'ວັນທີ່ສິ້ນສຸດ', minWidth: 80 },
   { id: 'petName', label: 'ຊື່ສັດລ້ຽງ', minWidth: 80 },
@@ -86,7 +86,7 @@ export default function Reservation() {
                       sx={{
                         minWidth: column.minWidth,
                         fontWeight: 'bold',
-                        fontSize: '0.75rem',
+                        fontSize: '1rem', // ขยายขนาดหัวตาราง
                         px: 1,
                         py: 0.5,
                         whiteSpace: 'nowrap'
@@ -112,7 +112,7 @@ export default function Reservation() {
                         <TableCell
                           align="center"
                           key={col.id}
-                          sx={{ fontSize: '0.75rem', px: 1, py: 0.5 }}
+                          sx={{ fontSize: '1rem', px: 1, py: 0.5 }} // ขยายขนาดข้อมูล
                         >
                           {reservation[col.id]}
                         </TableCell>
@@ -121,7 +121,7 @@ export default function Reservation() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={10} align="center">
+                    <TableCell colSpan={10} align="center" sx={{ fontSize: '1rem' }}>
                       ບໍ່ມີຂໍ້ມູນ
                     </TableCell>
                   </TableRow>

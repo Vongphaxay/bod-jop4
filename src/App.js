@@ -20,20 +20,27 @@ import Cages from "./pages/Cages";
 import Login from "./login/login";
 import Register from "./login/register";
 import ReservationList from "./pages/Reservationlist";
+import Cookies from 'js-cookie';
 
 const Layout = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
   const location = useLocation();
+  const name = Cookies.get("name");
+  const cus_id = Cookies.get("cus_id");
+  const accessToken = Cookies.get("accessToken");
+
 
   // Check if current page is login or register
   const isAuthPage = location.pathname === "/login" || location.pathname === "/register";
 
   const handleClick = (event) => {
+    const name = Cookies.get("name");
+    console.log(name);
     setAnchorEl(event.currentTarget);
   };
-  
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -99,23 +106,47 @@ const Layout = () => {
 
           {/* Only show login/register buttons if not on login/register pages */}
           {!isAuthPage && (
-            <Stack direction="row" spacing={1}>
-              <Button 
-                variant="contained" 
-                sx={{ bgcolor: "#004ba0", color: "#fff", borderRadius: 2 }}
-                onClick={() => navigate("/login")}
-              >
-                Login
-              </Button>
-              <Button 
-                variant="contained" 
-                sx={{ bgcolor: "#ff9800", color: "#fff", borderRadius: 2 }}
-                onClick={() => navigate("/register")}
-              >
-                Register
-              </Button>
-            </Stack>
-          )}
+          <Stack direction="row" spacing={2} alignItems="center">
+            {name && accessToken ? (
+              // ✅ เมื่อผู้ใช้ล็อกอินแล้ว
+              <>
+                <Typography variant="body1" sx={{ fontWeight: "bold", color: "#004ba0" }}>
+                  {name}
+                </Typography>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => {
+                    Cookies.remove("name");
+                    Cookies.remove("cus_id");
+                    Cookies.remove("accessToken");
+                    navigate("/login");
+                  }}
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              // ❌ ยังไม่ล็อกอิน
+              <>
+                <Button
+                  variant="contained"
+                  sx={{ bgcolor: "#004ba0", color: "#fff", borderRadius: 2 }}
+                  onClick={() => navigate("/login")}
+                >
+                  Login
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{ bgcolor: "#ff9800", color: "#fff", borderRadius: 2 }}
+                  onClick={() => navigate("/register")}
+                >
+                  Register
+                </Button>
+              </>
+            )}
+          </Stack>
+        )}
         </Toolbar>
       </AppBar>
     </>

@@ -10,8 +10,18 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import PetsIcon from "@mui/icons-material/Pets";
 import EventIcon from "@mui/icons-material/Event";
 import PaymentIcon from "@mui/icons-material/Payment";
+import { getRoomPet } from "../services/roompet.service";
 
 const Cages = () => {
+  const APIGETROOMPET = async () => {
+    try {
+      const response = await getRoomPet();
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  APIGETROOMPET();
   const [selectedCage, setSelectedCage] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -759,7 +769,7 @@ const Cages = () => {
                       ການຈອງສຳເລັດ
                     </Typography>
                     <Typography sx={{ mt: 1, color: "#5b2b0f" }}>
-                      ການຈອງຖືກບັນທຶກແລ້ວ ກົດ OK ເພື່ອກັບໄປໂປຣໄຟລ໌
+                      ການຈອງຖືກບັນທຶກແລ້ວ ກົດ OK ເພື່ອປິດໜ້າຕ່າງ
                     </Typography>
                     <Button
                       variant="contained"

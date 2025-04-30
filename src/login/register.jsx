@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { 
-  Box, 
-  TextField, 
-  Button, 
-  Typography, 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem, 
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
   Paper,
   InputAdornment,
   Link
@@ -19,32 +19,48 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LockIcon from "@mui/icons-material/Lock";
 import WcIcon from "@mui/icons-material/Wc";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
 import PetsIcon from "@mui/icons-material/Pets";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { registerCustomer } from "../services/customer.service";
+
+
 
 const Register = () => {
-  const [gender, setGender] = useState('');
   const navigate = useNavigate();
 
-  const handleGenderChange = (event) => {
-    setGender(event.target.value);
-  };
+  // State สำหรับแต่ละฟิลด์
+  const [name, setName] = useState('');
+  const [gender, setGender] = useState('');
+  const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  
+  const APIREGISTER = async () => {
+    try {
+      const response = await registerCustomer(name, gender, address, phone, username, password);
+      console.log(response);
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
+    <Box sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
       flexDirection: 'column',
-      pt: 4, 
-      pb: 4 
+      pt: 4,
+      pb: 4
     }}>
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          width: '100%', 
-          maxWidth: 500, 
-          p: 4, 
+      <Paper
+        elevation={3}
+        sx={{
+          width: '100%',
+          maxWidth: 500,
+          p: 4,
           borderRadius: 2,
           position: 'relative',
           display: "flex",
@@ -52,7 +68,6 @@ const Register = () => {
           alignItems: "center"
         }}
       >
-        {/* Back arrow button */}
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate("/")}
@@ -64,28 +79,27 @@ const Register = () => {
         >
           ກັບຄືນ
         </Button>
-        
+
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <PetsIcon fontSize="large" sx={{ color: "#552619", mr: 1 }} />
-          <Typography
-            variant="h5"
-            sx={{
-              color: "#552619",
-              fontWeight: 600
-            }}
-          >
+          <Typography variant="h5" sx={{ color: "#552619", fontWeight: 600 }}>
             DR. P VETERINARY
           </Typography>
         </Box>
-        
+
         <Typography variant="h4" gutterBottom sx={{ color: '#552619', mb: 3, textAlign: 'center' }}>
           ລົງທະບຽນ
         </Typography>
-        
-        <TextField 
-          label="ຊື່" 
-          variant="outlined" 
-          fullWidth 
+
+        <TextField
+          label="ຊື່"
+          variant="outlined"
+          fullWidth
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+            console.log("Name:", e.target.value);
+          }}
           sx={{ mb: 2 }}
           InputProps={{
             startAdornment: (
@@ -95,7 +109,7 @@ const Register = () => {
             ),
           }}
         />
-        
+
         <FormControl fullWidth sx={{ mb: 2 }}>
           <InputLabel id="gender-select-label">ເພດ</InputLabel>
           <Select
@@ -103,7 +117,10 @@ const Register = () => {
             id="gender-select"
             value={gender}
             label="ເພດ"
-            onChange={handleGenderChange}
+            onChange={(e) => {
+              setGender(e.target.value);
+              console.log("Gender:", e.target.value);
+            }}
             startAdornment={
               <InputAdornment position="start">
                 <WcIcon />
@@ -112,16 +129,20 @@ const Register = () => {
           >
             <MenuItem value="male">ຊາຍ</MenuItem>
             <MenuItem value="female">ຍິງ</MenuItem>
-            <MenuItem value="other">ອື່ນໆ</MenuItem>
           </Select>
         </FormControl>
-        
-        <TextField 
-          label="ທີ່ຢູ່" 
-          variant="outlined" 
-          fullWidth 
+
+        <TextField
+          label="ທີ່ຢູ່"
+          variant="outlined"
+          fullWidth
           multiline
           rows={2}
+          value={address}
+          onChange={(e) => {
+            setAddress(e.target.value);
+            console.log("Address:", e.target.value);
+          }}
           sx={{ mb: 2 }}
           InputProps={{
             startAdornment: (
@@ -131,13 +152,18 @@ const Register = () => {
             ),
           }}
         />
-        
-        <TextField 
-          label="ເບີໂທ" 
-          variant="outlined" 
-          fullWidth 
-          sx={{ mb: 2 }}
+
+        <TextField
+          label="ເບີໂທ"
+          variant="outlined"
+          fullWidth
           inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+          value={phone}
+          onChange={(e) => {
+            setPhone(e.target.value);
+            console.log("Phone:", e.target.value);
+          }}
+          sx={{ mb: 2 }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -146,11 +172,16 @@ const Register = () => {
             ),
           }}
         />
-        
-        <TextField 
-          label="ຊື່ຜູ້ໃຊ້" 
-          variant="outlined" 
-          fullWidth 
+
+        <TextField
+          label="ຊື່ຜູ້ໃຊ້"
+          variant="outlined"
+          fullWidth
+          value={username}
+          onChange={(e) => {
+            setUsername(e.target.value);
+            console.log("Username:", e.target.value);
+          }}
           sx={{ mb: 2 }}
           InputProps={{
             startAdornment: (
@@ -160,12 +191,17 @@ const Register = () => {
             ),
           }}
         />
-        
-        <TextField 
-          label="ລະຫັດຜ່ານ" 
-          type="password" 
-          variant="outlined" 
-          fullWidth 
+
+        <TextField
+          label="ລະຫັດຜ່ານ"
+          type="password"
+          variant="outlined"
+          fullWidth
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            console.log("Password:", e.target.value);
+          }}
           sx={{ mb: 3 }}
           InputProps={{
             startAdornment: (
@@ -175,31 +211,34 @@ const Register = () => {
             ),
           }}
         />
-        
-        <Button 
-          variant="contained" 
-          fullWidth 
-          sx={{ 
-            bgcolor: "#ff9800", 
-            color: "#fff", 
+
+        <Button
+          variant="contained"
+          fullWidth
+          sx={{
+            bgcolor: "#ff9800",
+            color: "#fff",
             borderRadius: 2,
             py: 1.5,
             '&:hover': {
               bgcolor: "#f57c00"
             }
           }}
+          onClick={() => {
+            console.log("Register Data:", {
+              name, gender, address, phone, username, password
+            });
+            APIREGISTER();
+          }}
+          
         >
           ລົງທະບຽນ
         </Button>
-        
+
         <Box sx={{ textAlign: "center", mt: 2 }}>
           <Typography variant="body2" sx={{ color: "#555" }}>
             ມີບັນຊີແລ້ວບໍ?{" "}
-            <Link
-              component={RouterLink}
-              to="/login"
-              sx={{ color: "#004ba0", fontWeight: "bold" }}
-            >
+            <Link component={RouterLink} to="/login" sx={{ color: "#004ba0", fontWeight: "bold" }}>
               ເຂົ້າສູ່ລະບົບ
             </Link>
           </Typography>
