@@ -10,7 +10,7 @@ import {
   MenuItem,
   Paper,
   InputAdornment,
-  Link
+  Link,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonIcon from "@mui/icons-material/Person";
@@ -22,50 +22,67 @@ import WcIcon from "@mui/icons-material/Wc";
 import PetsIcon from "@mui/icons-material/Pets";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { registerCustomer } from "../services/customer.service";
-
-
+import Alert from "@mui/material/Alert";
 
 const Register = () => {
   const navigate = useNavigate();
 
   // State สำหรับแต่ละฟิลด์
-  const [name, setName] = useState('');
-  const [gender, setGender] = useState('');
-  const [address, setAddress] = useState('');
-  const [phone, setPhone] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  
+  const [name, setName] = useState("");
+  const [gender, setGender] = useState("");
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
   const APIREGISTER = async () => {
     try {
-      const response = await registerCustomer(name, gender, address, phone, username, password);
+      const response = await registerCustomer(
+        name,
+        gender,
+        address,
+        phone,
+        username,
+        password
+      );
       console.log(response);
       navigate("/login");
     } catch (error) {
       console.error(error);
+      const message = error?.response?.data?.error;
+      if (message === "Username already exists.") {
+        setError("ຊື່ຜູ້ໃຊ້ມີແລ້ວ");
+      } else if (message === "Phone number already exists.") {
+        setError("ເບີໂທມີແລ້ວ");
+      } else {
+        setError("ເກີດຂໍ້ຜິດພາດ");
+      }
     }
-  }
+  };
 
   return (
-    <Box sx={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      flexDirection: 'column',
-      pt: 4,
-      pb: 4
-    }}>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        pt: 4,
+        pb: 4,
+      }}
+    >
       <Paper
         elevation={3}
         sx={{
-          width: '100%',
+          width: "100%",
           maxWidth: 500,
           p: 4,
           borderRadius: 2,
-          position: 'relative',
+          position: "relative",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center"
+          alignItems: "center",
         }}
       >
         <Button
@@ -74,7 +91,7 @@ const Register = () => {
           sx={{
             alignSelf: "flex-start",
             mb: 2,
-            color: "#552619"
+            color: "#552619",
           }}
         >
           ກັບຄືນ
@@ -87,7 +104,11 @@ const Register = () => {
           </Typography>
         </Box>
 
-        <Typography variant="h4" gutterBottom sx={{ color: '#552619', mb: 3, textAlign: 'center' }}>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ color: "#552619", mb: 3, textAlign: "center" }}
+        >
           ລົງທະບຽນ
         </Typography>
 
@@ -157,7 +178,7 @@ const Register = () => {
           label="ເບີໂທ"
           variant="outlined"
           fullWidth
-          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+          inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
           value={phone}
           onChange={(e) => {
             setPhone(e.target.value);
@@ -211,7 +232,11 @@ const Register = () => {
             ),
           }}
         />
-
+        {error && (
+          <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
+            {error}
+          </Alert>
+        )}
         <Button
           variant="contained"
           fullWidth
@@ -220,17 +245,33 @@ const Register = () => {
             color: "#fff",
             borderRadius: 2,
             py: 1.5,
-            '&:hover': {
-              bgcolor: "#f57c00"
-            }
+            "&:hover": {
+              bgcolor: "#f57c00",
+            },
           }}
           onClick={() => {
+            if (
+              !name ||
+              !gender ||
+              !address ||
+              !phone ||
+              !username ||
+              !password
+            ) {
+              setError("ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ");
+              return;
+            }
+            setError("");
             console.log("Register Data:", {
-              name, gender, address, phone, username, password
+              name,
+              gender,
+              address,
+              phone,
+              username,
+              password,
             });
             APIREGISTER();
           }}
-          
         >
           ລົງທະບຽນ
         </Button>
@@ -238,7 +279,11 @@ const Register = () => {
         <Box sx={{ textAlign: "center", mt: 2 }}>
           <Typography variant="body2" sx={{ color: "#555" }}>
             ມີບັນຊີແລ້ວບໍ?{" "}
-            <Link component={RouterLink} to="/login" sx={{ color: "#004ba0", fontWeight: "bold" }}>
+            <Link
+              component={RouterLink}
+              to="/login"
+              sx={{ color: "#004ba0", fontWeight: "bold" }}
+            >
               ເຂົ້າສູ່ລະບົບ
             </Link>
           </Typography>

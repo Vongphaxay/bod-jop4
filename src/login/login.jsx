@@ -8,7 +8,7 @@ import {
   Paper,
   InputAdornment,
   IconButton,
-  Link
+  Link,
 } from "@mui/material";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PetsIcon from "@mui/icons-material/Pets";
@@ -16,27 +16,39 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { loginCustomer } from "../services/customer.service";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
+import Alert from "@mui/material/Alert";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const APILOGIN = async () => {
     try {
       const response = await loginCustomer(username, password);
       console.log(response);
-  
+
       // ✅ Set cookies
       Cookies.set("name", response.name);
       Cookies.set("cus_id", response.cus_id);
-      Cookies.set("accessToken", response.accessToken, { secure: true, sameSite: 'strict' });
-  
+      Cookies.set("accessToken", response.accessToken, {
+        secure: true,
+        sameSite: "strict",
+      });
+
       navigate("/");
     } catch (error) {
-      console.error(error);
+      const message = error?.response?.data?.error || "Login failed";
+      if (message === "Password is incorrect") {
+        setError("ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ");
+      } else if (message === "User not found") {
+        setError("ບໍ່ພົບຜູ້ໃຊ້");
+      } else {
+        setError("ເກີດຂໍ້ຜິດພາດ");
+      }
     }
   };
 
@@ -51,7 +63,7 @@ const Login = () => {
           p: 5,
           borderRadius: 4,
           backgroundColor: "#fff",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.1)"
+          boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
         }}
       >
         <Box
@@ -59,7 +71,7 @@ const Login = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            mb: 3
+            mb: 3,
           }}
         >
           <Button
@@ -68,7 +80,7 @@ const Login = () => {
             sx={{
               alignSelf: "flex-start",
               mb: 2,
-              color: "#552619"
+              color: "#552619",
             }}
           >
             ກັບຄືນ
@@ -80,14 +92,17 @@ const Login = () => {
               variant="h5"
               sx={{
                 color: "#552619",
-                fontWeight: 600
+                fontWeight: 600,
               }}
             >
               DR. P VETERINARY
             </Typography>
           </Box>
 
-          <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold", color: "#2C3E50" }}>
+          <Typography
+            variant="h4"
+            sx={{ mb: 3, fontWeight: "bold", color: "#2C3E50" }}
+          >
             ເຂົ້າສູ່ລະບົບ
           </Typography>
         </Box>
@@ -101,10 +116,9 @@ const Login = () => {
             setUsername(e.target.value);
             console.log("Username:", e.target.value);
           }}
-
           sx={{ mb: 3 }}
           InputProps={{
-            sx: { borderRadius: 2 }
+            sx: { borderRadius: 2 },
           }}
         />
 
@@ -131,10 +145,15 @@ const Login = () => {
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
-            )
+            ),
           }}
         />
 
+        {error && (
+          <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
+            {error}
+          </Alert>
+        )}
         <Button
           variant="contained"
           fullWidth
@@ -146,13 +165,16 @@ const Login = () => {
             fontSize: "1rem",
             mb: 2,
             "&:hover": {
-              bgcolor: "#003b80"
-            }
+              bgcolor: "#003b80",
+            },
           }}
           onClick={() => {
-            console.log("Login Data:", {
-              username, password
-            });
+            if (!username || !password) {
+              setError("ກະລຸນາໃສ່ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານ");
+              return;
+            }
+            setError("");
+            console.log("Login Data:", { username, password });
             APILOGIN();
           }}
         >

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -12,46 +12,9 @@ import {
   Card,
   CardContent
 } from '@mui/material';
-
-// ຂໍ້ມູນຕົວຢ່າງ
-const petReservations = [
-  {
-    bookingDate: '5 ມື້',
-    startDate: '20/04/2025',
-    endDate: '25/04/2025',
-    petName: 'ໂຕນີ',
-    age: '3 ປີ',
-    color: 'ສີນ້ຳຕານ',
-    gender: 'ຜູ້',
-    petType: 'ໝາ',
-    petSize: 'ກາງ',
-    totalPrice: '500,000 ກີບ'
-  },
-  {
-    bookingDate: '4 ມື້',
-    startDate: '01/05/2025',
-    endDate: '05/05/2025',
-    petName: 'ມີມີ່',
-    age: '2 ປີ',
-    color: 'ສີຂາວ',
-    gender: 'ແມ່',
-    petType: 'ແມວ',
-    petSize: 'ນ້ອຍ',
-    totalPrice: '400,000 ກີບ'
-  },
-  {
-    bookingDate: '5 ມື້',
-    startDate: '10/05/2025',
-    endDate: '15/05/2025',
-    petName: 'ລັກກີ້',
-    age: '4 ປີ',
-    color: 'ສີດຳ',
-    gender: 'ຜູ້',
-    petType: 'ໝາ',
-    petSize: 'ໃຫຍ່',
-    totalPrice: '650,000 ກີບ'
-  }
-];
+import { getAllBookingbycus_id } from '../services/booking.service';
+import Cookies from 'js-cookie';
+import dayjs from 'dayjs';
 
 const tableColumns = [
   { id: 'bookingDate', label: 'ຈອງ', minWidth: 60 },
@@ -67,6 +30,47 @@ const tableColumns = [
 ];
 
 export default function Reservation() {
+  const [petReservations, setPetReservations] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const cus_id = Number(Cookies.get("cus_id"));
+        const token = Cookies.get("accessToken");
+        const response = await getAllBookingbycus_id(cus_id, token);
+        console.log(response);
+        console.log("API response:", response?.data?.booking);
+
+        const data = response?.data?.booking || [];
+
+        const formattedData = data.map(item => {
+          const start = dayjs(item.start_date);
+          const end = dayjs(item.stop_date);
+          const diffDays = end.diff(start, 'day');
+
+          return {
+            bookingDate: `${diffDays} ມື້`,
+            startDate: start.format('DD/MM/YYYY'),
+            endDate: end.format('DD/MM/YYYY'),
+            petName: item.pet?.pet_name,
+            age: `${item.pet?.age} ປີ`,
+            color: item.pet?.color,
+            gender: item.pet?.gender,
+            petType: item.pet?.pet_type,
+            petSize: item.pet?.size,
+            totalPrice: `${Number(item.total).toLocaleString()} ກີບ`
+          };
+        });
+
+        setPetReservations(formattedData);
+      } catch (error) {
+        console.error("Error fetching bookings:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <Box sx={{ width: '100%', maxWidth: '1200px', mx: 'auto', p: 3 }}>
       <Typography variant="h5" mb={2} textAlign="center" fontWeight="bold">
@@ -86,7 +90,7 @@ export default function Reservation() {
                       sx={{
                         minWidth: column.minWidth,
                         fontWeight: 'bold',
-                        fontSize: '1rem', // ขยายขนาดหัวตาราง
+                        fontSize: '1rem',
                         px: 1,
                         py: 0.5,
                         whiteSpace: 'nowrap'
@@ -112,7 +116,7 @@ export default function Reservation() {
                         <TableCell
                           align="center"
                           key={col.id}
-                          sx={{ fontSize: '1rem', px: 1, py: 0.5 }} // ขยายขนาดข้อมูล
+                          sx={{ fontSize: '1rem', px: 1, py: 0.5 }}
                         >
                           {reservation[col.id]}
                         </TableCell>

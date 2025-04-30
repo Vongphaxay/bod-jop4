@@ -1,50 +1,78 @@
-import React, { useState } from "react";
-import {
-  Box, Grid, Paper, Typography, Button, Stack, Divider, DialogActions, Container, Dialog, DialogTitle, DialogContent,
-  TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText
-} from "@mui/material";
-import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
-import PetsIcon from "@mui/icons-material/Pets";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import EventIcon from "@mui/icons-material/Event";
 import PaymentIcon from "@mui/icons-material/Payment";
+import PetsIcon from "@mui/icons-material/Pets";
+import {
+  Box,
+  Button,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  FormControl,
+  FormHelperText,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import Cookies from "js-cookie";
+import React, { useEffect, useState } from "react";
+import { bookingRoom } from "../services/booking.service";
 import { getRoomPet } from "../services/roompet.service";
 
 const Cages = () => {
-  const APIGETROOMPET = async () => {
-    try {
-      const response = await getRoomPet();
-      console.log(response);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-  APIGETROOMPET();
+  const [cages, setCages] = useState([]);
   const [selectedCage, setSelectedCage] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    date: "",
-    time: "",
-  });
+  const [formData, setFormData] = useState({ name: "", date: "", time: "" });
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const [formErrors, setFormErrors] = useState({});
+
+  const [petData, setPetData] = useState({
+    petName: "",
+    petAge: "",
+    petGender: "",
+    petColor: "",
+    petType: "",
+    petSize: 0,
+  });
+
   const [bookingData, setBookingData] = useState({
     startDate: new Date(),
     endDate: new Date(new Date().setDate(new Date().getDate() + 1)),
     days: 1,
-    petType: "",
-    petName: "",
-    petAge: "",
-    petColor: "",
-    petGender: "",
-    petSize: "",
-    ownerName: "",
-    price: 0, // ราคา
+    // days: "2025-04-23",
+    ownerID: 0,
+    room_id: 0,
+    price: "",
   });
-  const [formErrors, setFormErrors] = useState({});
+
+  useEffect(() => {
+    const cus_id = Number(Cookies.get("cus_id"));
+    setBookingData((prev) => ({
+      ...prev,
+      ownerID: cus_id || 0,
+
+    }));
+  }, []);
+
+  useEffect(() => {
+    if (selectedCage) {
+      const newPrice = calculateTotalPrice();
+      setBookingData((prev) => ({ ...prev, price: newPrice.toString() }));
+    }
+  }, [selectedCage, bookingData.days]);
 
   const handleDetailsOpen = (cage) => {
     setSelectedCage(cage);
@@ -56,44 +84,48 @@ const Cages = () => {
   };
 
   const handleBookingOpen = (cage) => {
+    console.log("room_id:", cage.id);
+    localStorage.setItem("room_id", cage.id);
+
+    setBookingData(prev => ({
+      ...prev,
+      room_id: cage.id, 
+    }));
+
     setSelectedCage(cage);
     setBookingOpen(true);
-    setFormErrors({});  // ลบ error เมื่อเปิดฟอร์ม
+    setFormErrors({}); // ลบ error เมื่อเปิดฟอร์ม
   };
 
   // ฟังก์ชันล้างข้อมูลทั้งหมด
   const resetBookingData = () => {
-    setFormData({
-      name: "",
-      date: "",
-      time: "",
+    setFormData({ name: "", date: "", time: "" });
+    setPetData({
+      petName: "",
+      petAge: "",
+      petGender: "",
+      petColor: "",
+      petType: "",
+      petSize: "",
     });
 
     setBookingData({
       startDate: new Date(),
       endDate: new Date(new Date().setDate(new Date().getDate() + 1)),
       days: 1,
-      petType: "",
-      petName: "",
-      petAge: "",
-      petColor: "",
-      petGender: "",
-      petSize: "",
-      ownerName: "",
-      phone: "",
-      price: 0,  // รีเซตราคากลับเป็น 0
+      ownerID: Number(Cookies.get("cus_id")) || 0,
+      price: 0,
     });
 
-    setSelectedOptions([]);  // ลบตัวเลือกที่เลือกไว้
-    setFormErrors({});  // ลบข้อผิดพลาด
+    setSelectedOptions([]);
+    setFormErrors({});
   };
 
   // ฟังก์ชันปิด booking dialog และล้างข้อมูล
   const handleBookingClose = () => {
-    resetBookingData();  // ล้างข้อมูลทั้งหมดก่อนปิด dialog
-    setBookingOpen(false);  // ปิด dialog
+    resetBookingData(); // ล้างข้อมูลทั้งหมดก่อนปิด dialog
+    setBookingOpen(false); // ปิด dialog
   };
-
 
   const calculateDays = (start, end) => {
     const difference = end.getTime() - start.getTime();
@@ -101,26 +133,60 @@ const Cages = () => {
   };
 
   const handleDateChange = (type, date) => {
-    setBookingData(prev => {
-      const newData = { ...prev, [type]: date };
-      // Recalculate days when dates change
-      if (type === 'startDate' || type === 'endDate') {
-        newData.days = calculateDays(
-          type === 'startDate' ? date : prev.startDate,
-          type === 'endDate' ? date : prev.endDate
-        );
-      }
-      return newData;
+    setBookingData((prev) => {
+      const updated = { ...prev, [type]: date };
+      updated.days = calculateDays(
+        type === "startDate" ? date : prev.startDate,
+        type === "endDate" ? date : prev.endDate
+      );
+      return updated;
     });
   };
 
-  // Handle changes for all booking form fields
   const handleBookingChange = (field, value) => {
-    setBookingData(prev => ({ ...prev, [field]: value }));
-
-    // Clear error for this field when value changes
+    setBookingData((prev) => ({ ...prev, [field]: value }));
     if (formErrors[field]) {
-      setFormErrors(prev => ({ ...prev, [field]: undefined }));
+      setFormErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const handlePetChange = (field, value) => {
+    setPetData((prev) => ({ ...prev, [field]: value }));
+
+    if (formErrors[field]) {
+      setFormErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const APIBOOKINGROOM = async () => {
+    try {
+      const Token = Cookies.get("accessToken");
+
+      const dataOfPet = {
+        pet_name: petData.petName,
+        age: petData.petAge,
+        gender: petData.petGender,
+        color: petData.petColor,
+        pet_type: petData.petType,
+        size: petData.petSize,
+      };
+
+      const dataOfBooking = {
+        book_date: bookingData.days,
+        start_date: bookingData.startDate,
+        stop_date: bookingData.endDate,
+        cus_id: bookingData.ownerID,
+        room_id: bookingData.room_id,
+        total: bookingData.price,
+      };
+
+      const response = await bookingRoom(dataOfPet, dataOfBooking, Token);
+      console.log(response);
+      if (response?.message === "Pet created successfully") {
+        setSuccessDialogOpen(true); 
+      } 
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -129,13 +195,13 @@ const Cages = () => {
     const errors = {};
 
     // Required fields validation
-    if (!bookingData.petName) errors.petName = "ກະລຸນາປ້ອນຊື່ສັດລ້ຽງ";
-    if (!bookingData.petType) errors.petType = "ກະລຸນາເລືອກປະເພດສັດລ້ຽງ";
-    if (!bookingData.petGender) errors.petGender = "ກະລຸນາເລືອກເພດສັດລ້ຽງ";
-    if (!bookingData.petSize) errors.petSize = "ກະລຸນາເລືອກຂະໜາດສັດລ້ຽງ";
-    if (!bookingData.ownerName) errors.ownerName = "ກະລຸນາປ້ອນລະຫັດຜູ້ຈອງ";
-    if (!bookingData.petColor) errors.petColor = "ກະລຸນາປ້ອນສີສັດລ້ຽງ";
-    if (!bookingData.petAge) errors.petAge = "ກະລຸນາປ້ອນອາຍຸສັດລ້ຽງ";
+    if (!petData.petName) errors.petName = "ກະລຸນາປ້ອນຊື່ສັດລ້ຽງ";
+    if (!petData.petAge) errors.petAge = "ກະລຸນາປ້ອນອາຍຸສັດລ້ຽງ";
+    if (!petData.petColor) errors.petColor = "ກະລຸນາປ້ອນສີສັດລ້ຽງ";
+    if (!petData.petType) errors.petType = "ກະລຸນາເລືອກປະເພດສັດລ້ຽງ";
+    if (!petData.petGender) errors.petGender = "ກະລຸນາເລືອກເພດສັດລ້ຽງ";
+    if (!petData.petSize) errors.petSize = "ກະລຸນາເລືອກຂະໜາດສັດລ້ຽງ";
+    if (!bookingData.ownerID) errors.ownerID = "ກະລຸນາປ້ອນລະຫັດຜູ້ຈອງ";
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -147,16 +213,21 @@ const Cages = () => {
   const handleSubmitBooking = () => {
     if (validateForm()) {
       console.log("Booking submitted:", bookingData);
-      setSuccessDialogOpen(true); // ✅ แค่เปิด Dialog ก่อน
+      console.log("Pet data:", petData);
+      APIBOOKINGROOM(); // เรียกใช้ API
+      
     }
   };
-  
+
   // เมื่อผู้ใช้กด OK ใน Dialog ค่อยปิดฟอร์มและรีเซตข้อมูล
   const handleSuccessOk = () => {
+    localStorage.removeItem("room_id"); 
+    window.location.reload(); // รีโหลดหน้าเว็บ
     setSuccessDialogOpen(false); // ปิด dialog
-    handleBookingClose();        // ปิดฟอร์ม + รีเซตข้อมูล
+    // clear localStorage room_id
+    handleBookingClose(); // ปิดฟอร์ม + รีเซตข้อมูล
   };
-  
+
   // Handling dialog close
   const handleDialogClose = (event, reason) => {
     if (reason === "backdropClick" || reason === "escapeKeyDown") return;
@@ -183,20 +254,35 @@ const Cages = () => {
     L: "https://happyhausthailand.com/wp-content/uploads/2021/06/dogcage-L-grey4.jpg",
   };
 
-  const cages = Array.from({ length: 12 }, (_, i) => {
+  const APIGETROOMPET = async () => {
+    try {
+      const response = await getRoomPet();
+      setCages(response);
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    APIGETROOMPET();
+  }, []);
+
+  const room = cages.map((cage, i) => {
     const size = i < 4 ? "S" : i < 8 ? "M" : "L";
     return {
-      id: i + 1,
-      name: `ກົງທີ ${i + 1}`,
+      id: cage.room_id,
+      name: cage.room_name || `ກົງທີ ${i + 1}`,
       size,
-      status: i % 3 === 0 ? "ບໍ່ວ່າງ" : "ວ່າງ",
+      status: cage.status || "ວ່າງ",
+      price: cage.price,
     };
   });
 
   const groupedCages = {
-    S: cages.filter((c) => c.size === "S"),
-    M: cages.filter((c) => c.size === "M"),
-    L: cages.filter((c) => c.size === "L"),
+    S: room.filter((c) => c.size === "S"),
+    M: room.filter((c) => c.size === "M"),
+    L: room.filter((c) => c.size === "L"),
   };
 
   // Calculate total price
@@ -204,6 +290,7 @@ const Cages = () => {
     if (!selectedCage) return 0;
     const cagePrice = priceValueMap[selectedCage.size];
     return (cagePrice + BOOKING_FEE) * bookingData.days;
+    // return (cagePrice + BOOKING_FEE) * 1;
   };
 
   const formatPrice = (price) => {
@@ -213,16 +300,30 @@ const Cages = () => {
   return (
     <Box sx={{ py: 6, backgroundColor: "#f0f4f8", minHeight: "100vh" }}>
       <Container maxWidth="lg">
-        <Typography variant="h4" gutterBottom textAlign="center" fontWeight="bold" color="#2C3E50">
+        <Typography
+          variant="h4"
+          gutterBottom
+          textAlign="center"
+          fontWeight="bold"
+          color="#2C3E50"
+        >
           ລາຍການກົງສັດລ້ຽງ
         </Typography>
 
         {["S", "M", "L"].map((size) => (
           <Box key={size} sx={{ mb: 6 }}>
-            <Typography variant="h5" fontWeight="bold" sx={{ mb: 1, textAlign: "center", color: "#34495E" }}>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              sx={{ mb: 1, textAlign: "center", color: "#34495E" }}
+            >
               ຂະໜາດ {size}
             </Typography>
-            <Typography variant="subtitle1" textAlign="center" sx={{ color: "#7F8C8D", mb: 2 }}>
+            <Typography
+              variant="subtitle1"
+              textAlign="center"
+              sx={{ color: "#7F8C8D", mb: 2 }}
+            >
               💸 ລາຄາ {priceMap[size]} / ມື້ + ຄ່າຈອງ 20.000 ກີບ / ມື້
             </Typography>
             <Divider sx={{ mb: 3, borderColor: "#BDC3C7" }} />
@@ -250,22 +351,41 @@ const Cages = () => {
                         },
                       }}
                     >
-                      <Typography variant="h6" fontWeight="bold" fontSize="1.25rem" color="#2C3E50">
+                      <Typography
+                        variant="h6"
+                        fontWeight="bold"
+                        fontSize="1.25rem"
+                        color="#2C3E50"
+                      >
                         {cage.name}
                       </Typography>
 
-                      <Stack direction="row" spacing={1} justifyContent="center" alignItems="center" sx={{ my: 2 }}>
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        justifyContent="center"
+                        alignItems="center"
+                        sx={{ my: 2 }}
+                      >
                         {isAvailable ? (
                           <>
                             <CheckCircleIcon color="success" fontSize="large" />
-                            <Typography color="green" fontWeight="bold" fontSize="1.1rem">
+                            <Typography
+                              color="green"
+                              fontWeight="bold"
+                              fontSize="1.1rem"
+                            >
                               {cage.status}
                             </Typography>
                           </>
                         ) : (
                           <>
                             <CancelIcon color="error" fontSize="large" />
-                            <Typography color="red" fontWeight="bold" fontSize="1.1rem">
+                            <Typography
+                              color="red"
+                              fontWeight="bold"
+                              fontSize="1.1rem"
+                            >
                               {cage.status}
                             </Typography>
                           </>
@@ -362,12 +482,17 @@ const Cages = () => {
                 </Typography>
                 <Typography gutterBottom fontSize="1.1rem">
                   <strong>📊 ສະຖານະ:</strong>{" "}
-                  <span style={{ color: selectedCage?.status === "ວ່າງ" ? "green" : "red" }}>
+                  <span
+                    style={{
+                      color: selectedCage?.status === "ວ່າງ" ? "green" : "red",
+                    }}
+                  >
                     {selectedCage?.status}
                   </span>
                 </Typography>
                 <Typography gutterBottom fontSize="1.1rem">
-                  <strong>💸 ລາຄາກົງ:</strong> {selectedCage ? priceMap[selectedCage.size] : ""} / ມື້
+                  <strong>💸 ລາຄາກົງ:</strong>{" "}
+                  {selectedCage ? priceMap[selectedCage.size] : ""} / ມື້
                 </Typography>
                 <Typography gutterBottom fontSize="1.1rem">
                   <strong>🏷️ ຄ່າຈອງ:</strong> 20.000 ກີບ / ມື້
@@ -380,14 +505,19 @@ const Cages = () => {
                   <Typography fontSize="1rem" sx={{ mb: 0.5 }}>
                     ✅ ຊຳລະເງິນທີ່ເຄົາເຕີ
                   </Typography>
-                  <Typography fontSize="1rem">
-                    🗓 ຈອງເລີຍ!
-                  </Typography>
+                  <Typography fontSize="1rem">🗓 ຈອງເລີຍ!</Typography>
                 </Box>
               </Box>
 
               {/* รูปภาพ */}
-              <Box sx={{ width: "45%", maxWidth: 300, borderRadius: 2, overflow: "hidden" }}>
+              <Box
+                sx={{
+                  width: "45%",
+                  maxWidth: 300,
+                  borderRadius: 2,
+                  overflow: "hidden",
+                }}
+              >
                 <img
                   src={selectedCage?.size ? cageImages[selectedCage.size] : ""}
                   alt="ລາຍລະອຽດກົງ"
@@ -402,7 +532,14 @@ const Cages = () => {
             </Box>
           </DialogContent>
 
-          <DialogActions sx={{ px: 3, pb: 3, display: 'flex', justifyContent: 'space-between' }}>
+          <DialogActions
+            sx={{
+              px: 3,
+              pb: 3,
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
             <Button
               onClick={handleDetailsClose}
               variant="outlined"
@@ -431,9 +568,9 @@ const Cages = () => {
                 borderRadius: 4,
                 boxShadow: "0 16px 48px rgba(0,0,0,0.2)",
                 backgroundColor: "#FAFAFA",
-                width: '100%',
-                maxWidth: '1000px', // กำหนดความกว้างสูงสุดของ Dialog
-                height: '90%',
+                width: "100%",
+                maxWidth: "1000px", // กำหนดความกว้างสูงสุดของ Dialog
+                height: "90%",
               },
             }}
           >
@@ -446,9 +583,9 @@ const Cages = () => {
                 borderTopLeftRadius: 16,
                 borderTopRightRadius: 16,
                 py: 2,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
               }}
             >
               <PetsIcon fontSize="large" /> ຈອງຄິວ {selectedCage?.name}
@@ -488,12 +625,16 @@ const Cages = () => {
                             <DatePicker
                               label="ວັນທີເລີ່ມຕົ້ນ"
                               value={bookingData.startDate}
-                              onChange={(date) => handleDateChange("startDate", date)}
+                              onChange={(date) =>
+                                handleDateChange("startDate", date)
+                              }
                               slotProps={{
                                 textField: {
                                   size: "small",
                                   sx: {
-                                    '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                                    "& .MuiOutlinedInput-root": {
+                                      borderRadius: 2,
+                                    },
                                     maxWidth: "150px",
                                   },
                                 },
@@ -508,12 +649,16 @@ const Cages = () => {
                             <DatePicker
                               label="ວັນທີສິ້ນສຸດ"
                               value={bookingData.endDate}
-                              onChange={(date) => handleDateChange("endDate", date)}
+                              onChange={(date) =>
+                                handleDateChange("endDate", date)
+                              }
                               slotProps={{
                                 textField: {
                                   size: "small",
                                   sx: {
-                                    '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                                    "& .MuiOutlinedInput-root": {
+                                      borderRadius: 2,
+                                    },
                                     maxWidth: "150px",
                                   },
                                 },
@@ -535,8 +680,8 @@ const Cages = () => {
                               }}
                               helperText="ຄຳນວນອັດຕະໂນມັດ"
                               sx={{
-                                '& .MuiOutlinedInput-root': { borderRadius: 2 },
-                                '& .MuiFormHelperText-root': {
+                                "& .MuiOutlinedInput-root": { borderRadius: 2 },
+                                "& .MuiFormHelperText-root": {
                                   marginLeft: 0,
                                   fontSize: "0.7rem",
                                 },
@@ -546,7 +691,9 @@ const Cages = () => {
                           </Box>
                         </Stack>
                         {/* ຂໍ້ມູນສັດລ້ຽງ */}
-                        <Box sx={{ flex: 1, minWidth: 350, maxWidth: 500, mt: 5 }}>
+                        <Box
+                          sx={{ flex: 1, minWidth: 350, maxWidth: 500, mt: 5 }}
+                        >
                           <Typography
                             variant="h6"
                             sx={{
@@ -564,70 +711,111 @@ const Cages = () => {
                           </Typography>
 
                           <Grid container spacing={2}>
-                            {[{ label: "ຊື່ສັດລ້ຽງ", key: "petName", required: true },
-                            { label: "ອາຍຸ", key: "petAge", required: true },
-                            { label: "ສີ", key: "petColor", required: true },]
-                              .map((field) => (
-                                <Grid item xs={6} key={field.key}>
-                                  <TextField
-                                    label={field.label}
-                                    value={bookingData[field.key] || ""}
-                                    onChange={(e) => handleBookingChange(field.key, e.target.value)}
-                                    variant="outlined"
-                                    size="small"
-                                    error={!!formErrors[field.key]}
-                                    helperText={formErrors[field.key]}
-                                    sx={{
-                                      maxWidth: "150px",
-                                      '& .MuiOutlinedInput-root': { borderRadius: 2 },
-                                    }}
-                                    fullWidth
-                                    required={field.required}
-                                  />
-                                </Grid>
-                              ))}
+                            {[
+                              {
+                                label: "ຊື່ສັດລ້ຽງ",
+                                key: "petName",
+                                required: true,
+                              },
+                              { label: "ອາຍຸ", key: "petAge", required: true },
+                              { label: "ສີ", key: "petColor", required: true },
+                            ].map((field) => (
+                              <Grid item xs={6} key={field.key}>
+                                <TextField
+                                  label={field.label}
+                                  value={petData[field.key] || ""}
+                                  onChange={(e) =>
+                                    handlePetChange(field.key, e.target.value)
+                                  }
+                                  variant="outlined"
+                                  size="small"
+                                  error={!!formErrors[field.key]}
+                                  helperText={formErrors[field.key]}
+                                  sx={{
+                                    maxWidth: "150px",
+                                    "& .MuiOutlinedInput-root": {
+                                      borderRadius: 2,
+                                    },
+                                  }}
+                                  fullWidth
+                                  required={field.required}
+                                />
+                              </Grid>
+                            ))}
 
                             {/* Gender */}
                             <Grid item xs={6}>
-                              <FormControl fullWidth required error={!!formErrors.petGender} size="small" sx={{ maxWidth: "150px" }}>
+                              <FormControl
+                                fullWidth
+                                required
+                                error={!!formErrors.petGender}
+                                size="small"
+                                sx={{ maxWidth: "150px" }}
+                              >
                                 <InputLabel>ເພດສັດລ້ຽງ</InputLabel>
                                 <Select
-                                  value={bookingData.petGender || ""}
-                                  onChange={(e) => handleBookingChange("petGender", e.target.value)}
+                                  value={petData.petGender || ""}
+                                  onChange={(e) =>
+                                    handlePetChange("petGender", e.target.value)
+                                  }
                                   label="ເພດສັດລ້ຽງ"
                                   sx={{ width: "150px" }}
                                 >
                                   <MenuItem value="ຜູ້">ຜູ້</MenuItem>
                                   <MenuItem value="ແມ່">ແມ່</MenuItem>
                                 </Select>
-                                {formErrors.petGender && <FormHelperText>{formErrors.petGender}</FormHelperText>}
+                                {formErrors.petGender && (
+                                  <FormHelperText>
+                                    {formErrors.petGender}
+                                  </FormHelperText>
+                                )}
                               </FormControl>
                             </Grid>
 
                             {/* Type */}
                             <Grid item xs={6}>
-                              <FormControl fullWidth required error={!!formErrors.petType} size="small" sx={{ maxWidth: "150px" }}>
+                              <FormControl
+                                fullWidth
+                                required
+                                error={!!formErrors.petType}
+                                size="small"
+                                sx={{ maxWidth: "150px" }}
+                              >
                                 <InputLabel>ປະເພດສັດລ້ຽງ</InputLabel>
                                 <Select
-                                  value={bookingData.petType || ""}
-                                  onChange={(e) => handleBookingChange("petType", e.target.value)}
+                                  value={petData.petType || ""}
+                                  onChange={(e) =>
+                                    handlePetChange("petType", e.target.value)
+                                  }
                                   label="ປະເພດສັດລ້ຽງ"
                                   sx={{ width: "150px" }}
                                 >
                                   <MenuItem value="ໝາ">ໝາ</MenuItem>
                                   <MenuItem value="ແມວ">ແມວ</MenuItem>
                                 </Select>
-                                {formErrors.petType && <FormHelperText>{formErrors.petType}</FormHelperText>}
+                                {formErrors.petType && (
+                                  <FormHelperText>
+                                    {formErrors.petType}
+                                  </FormHelperText>
+                                )}
                               </FormControl>
                             </Grid>
 
                             {/* Size */}
                             <Grid item xs={6}>
-                              <FormControl fullWidth required error={!!formErrors.petSize} size="small" sx={{ maxWidth: "150px" }}>
+                              <FormControl
+                                fullWidth
+                                required
+                                error={!!formErrors.petSize}
+                                size="small"
+                                sx={{ maxWidth: "150px" }}
+                              >
                                 <InputLabel>ຂະໜາດສັດລ້ຽງ</InputLabel>
                                 <Select
-                                  value={bookingData.petSize || ""}
-                                  onChange={(e) => handleBookingChange("petSize", e.target.value)}
+                                  value={petData.petSize || ""}
+                                  onChange={(e) =>
+                                    handlePetChange("petSize", e.target.value)
+                                  }
                                   label="ຂະໜາດສັດລ້ຽງ"
                                   sx={{ width: "150px" }}
                                 >
@@ -635,7 +823,11 @@ const Cages = () => {
                                   <MenuItem value="ກາງ">ກາງ</MenuItem>
                                   <MenuItem value="ໃຫຍ່">ໃຫຍ່</MenuItem>
                                 </Select>
-                                {formErrors.petSize && <FormHelperText>{formErrors.petSize}</FormHelperText>}
+                                {formErrors.petSize && (
+                                  <FormHelperText>
+                                    {formErrors.petSize}
+                                  </FormHelperText>
+                                )}
                               </FormControl>
                             </Grid>
                           </Grid>
@@ -655,10 +847,10 @@ const Cages = () => {
                         mb: 2.5,
                         color: "#2C3E50",
                         fontWeight: "bold",
-                        display: 'flex',
-                        alignItems: 'center',
+                        display: "flex",
+                        alignItems: "center",
                         gap: 1,
-                        borderBottom: '2px solid #3498DB',
+                        borderBottom: "2px solid #3498DB",
                         paddingBottom: 1,
                       }}
                     >
@@ -669,13 +861,25 @@ const Cages = () => {
                       <TextField
                         fullWidth
                         label="ລະຫັດຜູ້ຈອງ"
-                        name="ownerName"
-                        value={bookingData.ownerName}
-                        onChange={(e) => handleBookingChange('ownerName', e.target.value)}
-                        required
-                        error={!!formErrors.ownerName}
-                        helperText={formErrors.ownerName}
-                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                        name="ownerID"
+                        value={bookingData.ownerID}
+                        onChange={(e) =>
+                          handleBookingChange("ownerID", e.target.value)
+                        }
+                        InputProps={{
+                          readOnly: true,
+                          sx: {
+                            backgroundColor: "#ECF0F1",
+                            borderRadius: 2,
+                            "& input": {
+                              color: "#2C3E50",
+                            },
+                          },
+                        }}
+                        // required
+                        error={!!formErrors.ownerID}
+                        helperText={formErrors.ownerID}
+                        sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
                       />
                     </Stack>
 
@@ -687,39 +891,66 @@ const Cages = () => {
                         p: 4,
                         borderRadius: 2,
                         backgroundColor: "#f8f9fa",
-                        border: "1px solid #e9ecef"
+                        border: "1px solid #e9ecef",
                       }}
                     >
-                      <Typography variant="h6" fontWeight="bold" color="#2C3E50" sx={{ mb: 2 }}>
+                      <Typography
+                        variant="h6"
+                        fontWeight="bold"
+                        color="#2C3E50"
+                        sx={{ mb: 2 }}
+                      >
                         ສະຫຼຸບຂໍ້ມູນການຈອງ
                       </Typography>
                       <Stack spacing={1.5}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
                           <Typography>ກົງຂະໜາດ {selectedCage?.size}</Typography>
                           <Typography>
-                            {selectedCage ? priceMap[selectedCage.size] : ""} × {bookingData.days} ມື້
+                            {selectedCage ? priceMap[selectedCage.size] : ""} ×{" "}
+                            {bookingData.days} ມື້
                           </Typography>
                         </Box>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
                           <Typography>ຄ່າຈອງ</Typography>
-                          <Typography>20.000 ກີບ × {bookingData.days} ມື້</Typography>
+                          <Typography>
+                            20.000 ກີບ × {bookingData.days} ມື້
+                          </Typography>
                         </Box>
                         <Divider sx={{ my: 1 }} />
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
                           <Typography fontWeight="bold">ລວມທັງໝົດ</Typography>
                           <Typography fontWeight="bold" color="#2980B9">
-                            {selectedCage ? formatPrice(calculateTotalPrice()) : "0"} ກີບ
+                            {selectedCage
+                              ? formatPrice(calculateTotalPrice())
+                              : "0"}{" "}
+                            ກີບ
                           </Typography>
                         </Box>
                       </Stack>
                     </Paper>
                   </Box>
-
                 </Grid>
               </Grid>
             </DialogContent>
 
-            <DialogActions sx={{ px: 3, pb: 3, pt: 2, justifyContent: 'flex-end' }}>
+            <DialogActions
+              sx={{ px: 3, pb: 3, pt: 2, justifyContent: "flex-end" }}
+            >
               <Stack direction="row" spacing={2}>
                 <Button
                   onClick={handleBookingClose}
@@ -764,7 +995,9 @@ const Cages = () => {
                       borderRadius: 2,
                     }}
                   >
-                    <CheckCircleIcon sx={{ fontSize: 60, color: "green", mb: 2 }} />
+                    <CheckCircleIcon
+                      sx={{ fontSize: 60, color: "green", mb: 2 }}
+                    />
                     <Typography variant="h6" fontWeight="bold" color="#5b2b0f">
                       ການຈອງສຳເລັດ
                     </Typography>
