@@ -89,7 +89,7 @@ const Cages = () => {
 
     setBookingData(prev => ({
       ...prev,
-      room_id: cage.id, 
+      room_id: cage.id,
     }));
 
     setSelectedCage(cage);
@@ -183,8 +183,8 @@ const Cages = () => {
       const response = await bookingRoom(dataOfPet, dataOfBooking, Token);
       console.log(response);
       if (response?.message === "Pet created successfully") {
-        setSuccessDialogOpen(true); 
-      } 
+        setSuccessDialogOpen(true);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -215,13 +215,13 @@ const Cages = () => {
       console.log("Booking submitted:", bookingData);
       console.log("Pet data:", petData);
       APIBOOKINGROOM(); // เรียกใช้ API
-      
+
     }
   };
 
   // เมื่อผู้ใช้กด OK ใน Dialog ค่อยปิดฟอร์มและรีเซตข้อมูล
   const handleSuccessOk = () => {
-    localStorage.removeItem("room_id"); 
+    localStorage.removeItem("room_id");
     window.location.reload(); // รีโหลดหน้าเว็บ
     setSuccessDialogOpen(false); // ปิด dialog
     // clear localStorage room_id
@@ -590,7 +590,7 @@ const Cages = () => {
             >
               <PetsIcon fontSize="large" /> ຈອງຄິວ {selectedCage?.name}
             </DialogTitle>
-            <DialogContent dividers sx={{ p: 6 }}>
+            <DialogContent dividers sx={{ p: 4 }}>
               <Grid container spacing={-1}>
                 {/* ฝั่งซ้าย: วันที่จอง + ข้อมูลสัตว์เลี้ยง */}
                 <Grid item xs={12} md={6}>
@@ -692,7 +692,7 @@ const Cages = () => {
                         </Stack>
                         {/* ຂໍ້ມູນສັດລ້ຽງ */}
                         <Box
-                          sx={{ flex: 1, minWidth: 350, maxWidth: 500, mt: 5 }}
+                          sx={{ flex: 1, minWidth: 350, maxWidth: 500, mt: 4 }}
                         >
                           <Typography
                             variant="h6"
@@ -710,7 +710,7 @@ const Cages = () => {
                             <PetsIcon color="primary" /> ຂໍ້ມູນສັດລ້ຽງ
                           </Typography>
 
-                          <Grid container spacing={2}>
+                          <Grid container spacing={1}>
                             {[
                               {
                                 label: "ຊື່ສັດລ້ຽງ",
@@ -829,6 +829,38 @@ const Cages = () => {
                                   </FormHelperText>
                                 )}
                               </FormControl>
+                            </Grid>
+                            <Grid container spacing={2}>
+                              {/* Type */}
+                              <Grid item xs={6}>
+                                <FormControl
+                                  fullWidth
+                                  required
+                                  error={!!formErrors.petSize}
+                                  size="small"
+                                  sx={{ maxWidth: "150px" }}
+                                >
+                                  <InputLabel>ປະເພດບໍລິການ</InputLabel>
+                                  <Select
+                                    value={petData.petSize || ""}
+                                    onChange={(e) =>
+                                      handlePetChange("petSize", e.target.value)
+                                    }
+                                    label="ຂະໜາດສັດລ້ຽງ"
+                                    sx={{ width: "150px" }}
+                                  >
+                                    <MenuItem value="ຝາກສັດລ້ຽງ">ຝາກສັດລ້ຽງ</MenuItem>
+                                    <MenuItem value="ຕັດຂົນສັດລ້ຽງ">ຕັດຂົນສັດລ້ຽງ</MenuItem>
+                                    <MenuItem value="ອາບນ້ຳສັດລ້ຽງ">ອາບນ້ຳສັດລ້ຽງ</MenuItem>
+                                    <MenuItem value="ປິ່ນປົວສັດລ້ຽງສັດລ້ຽງ">ປິ່ນປົວສັດລ້ຽງ</MenuItem>
+                                  </Select>
+                                  {formErrors.petSize && (
+                                    <FormHelperText>
+                                      {formErrors.petSize}
+                                    </FormHelperText>
+                                  )}
+                                </FormControl>
+                              </Grid>
                             </Grid>
                           </Grid>
                         </Box>

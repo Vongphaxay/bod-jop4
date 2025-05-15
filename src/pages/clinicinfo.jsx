@@ -14,7 +14,7 @@ const ClinicInfo = () => {
           <Card sx={{ borderRadius: 2, boxShadow: 3, overflow: "hidden", maxWidth: 400 }}>
             <CardMedia
               component="img"
-              image="https://scontent.fvte5-1.fna.fbcdn.net/v/t39.30808-6/476331814_638475425413059_1009452581605214338_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeHFgwqCscdg_92V6Akokvb2jOzS1p_A9YeM7NLWn8D1h_MdspkOHjPiDGv_ocZdW6fZ1GnHCzez6-teDTcc4Na-&_nc_ohc=VEd5aCTdSFEQ7kNvwFcdRJx&_nc_oc=Adm2ywN2dDvHkgYi613a9hK709_E108Mx6jPopkt9KLfNTx5iCB4Vcun9MZluLmzPwQ&_nc_zt=23&_nc_ht=scontent.fvte5-1.fna&_nc_gid=KrVQnNTR3ROzW5OGG1IIbw&oh=00_AfGyjWRel6290sc_pVZu99aFvaza8NVh5TaY7QqyPio19Q&oe=680BC55E"
+              image="https://scontent.fvte6-1.fna.fbcdn.net/v/t39.30808-6/472231485_615275431066392_5159280437899117111_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=Kq2UAcR6nkIQ7kNvwGBm7Os&_nc_oc=Adn8NqVF0-a3FfYkpw67Mhetw7Oj2jb_o2o3I1nEP4dQ1g-0gpXci3qu9o1rc_aAJn0&_nc_zt=23&_nc_ht=scontent.fvte6-1.fna&_nc_gid=Pxf6zDVTefIOsv6O95QDEQ&oh=00_AfK9RceKxhyXRZg4HFoaNVrlV9hwxcD2ae90gnuqILnbSw&oe=682B3AEA"
               alt="Clinic Location"
               sx={{ width: "100%", height: "350px", objectFit: "cover" }} 
             />

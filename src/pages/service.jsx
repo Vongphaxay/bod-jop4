@@ -21,25 +21,21 @@ const clinicData = [
     name: 'ຮັບຝາກສັດລ້ຽງ',
     description: "ຝາກໄວ້ຢ່າງອົບອຸ່ນ ເຫມາະສົມ ກັບທຸກພັນ",
     image: "https://mpics-cdn.mgronline.com/pics/Images/565000005041501.JPEG",
-    rating: 4.6
   },
   {
     name: 'ອາບນ້ຳສັດລ້ຽງ',
     description: "ໃຫ້ສັດລ້ຽງສະອາດ ແລະ ມີຄວາມສຸຂະພາບດີ",
     image: "https://www.chula.ac.th/wp-content/uploads/2021/10/shutterstock_1569883195-1024x683.jpg",
-    rating: 4.5
   },
   {
     name: 'ຕັດຂົນສັດລ້ຽງ',
     description: "ຄວາມຊ່ຽວຊານ ດູແລດ້ວຍຄວາມເປັນມືອາຊີບ",
     image: "https://trianacode.org/wp-content/uploads/2023/07/female-is-grooming-trimming-pomeranian-spitz-salon.jpg",
-    rating: 4.9
   },
   {
     name: 'ປິ່ນປົວສັດລ້ຽງ',
     description: "ການປິ່ນປົວດ້ວຍຄວາມເປັນມືອາຊີບ ແລະ ອຸປະກອນທັນສະໄໝ",
     image: "https://raksud.com/wp-content/uploads/veterinarian-taking-care-pet-dog1-1024x683.jpg",
-    rating: 4.8
   },
 ];
 
@@ -109,7 +105,7 @@ const ClinicCarousel = () => {
                 {clinic.description}
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', mt: 1.5 }}>
-                <Rating value={clinic.rating} precision={0.1} readOnly />
+                {/* <Rating value={clinic.rating} precision={0.1} readOnly /> */}
                 <Typography sx={{ ml: 1, fontWeight: 500 }}>{clinic.rating}</Typography>
               </Box>
               <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
