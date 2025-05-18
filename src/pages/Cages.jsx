@@ -27,7 +27,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
-import { bookingRoom } from "../services/booking.service";
+import { bookingRoom, getcategory_service } from "../services/booking.service";
 import { getRoomPet } from "../services/roompet.service";
 
 const Cages = () => {
@@ -55,6 +55,7 @@ const Cages = () => {
     // days: "2025-04-23",
     ownerID: 0,
     room_id: 0,
+    cat_id: 0,
     price: "",
   });
 
@@ -73,6 +74,19 @@ const Cages = () => {
       setBookingData((prev) => ({ ...prev, price: newPrice.toString() }));
     }
   }, [selectedCage, bookingData.days]);
+
+  const [categoryreport, setcategoryreport] = useState([]);
+
+  useEffect(() => {
+    const getcategory_serviceapi = async () => {
+      const response = await getcategory_service();
+      setcategoryreport(response.report); // Assuming `response.report` is the array
+      console.log("categoryreport", response.report);
+    };
+
+    getcategory_serviceapi();
+  }, []);
+
 
   const handleDetailsOpen = (cage) => {
     setSelectedCage(cage);
@@ -178,7 +192,9 @@ const Cages = () => {
         cus_id: bookingData.ownerID,
         room_id: bookingData.room_id,
         total: bookingData.price,
+        cat_id: petData.petSize // 👈 this now holds the selected cat_id
       };
+
 
       const response = await bookingRoom(dataOfPet, dataOfBooking, Token);
       console.log(response);
@@ -843,17 +859,21 @@ const Cages = () => {
                                   <InputLabel>ປະເພດບໍລິການ</InputLabel>
                                   <Select
                                     value={petData.petSize || ""}
-                                    onChange={(e) =>
-                                      handlePetChange("petSize", e.target.value)
-                                    }
-                                    label="ຂະໜາດສັດລ້ຽງ"
+                                    onChange={(e) => {
+                                      const selectedCatId = e.target.value;
+                                      console.log("Selected cat_id:", selectedCatId); // ✅ Will now show a number like 1, 2, etc.
+                                      handlePetChange("petSize", selectedCatId);
+                                    }}
+                                    label="ປະເພດບໍລິການ"
                                     sx={{ width: "150px" }}
                                   >
-                                    <MenuItem value="ຝາກສັດລ້ຽງ">ຝາກສັດລ້ຽງ</MenuItem>
-                                    <MenuItem value="ຕັດຂົນສັດລ້ຽງ">ຕັດຂົນສັດລ້ຽງ</MenuItem>
-                                    <MenuItem value="ອາບນ້ຳສັດລ້ຽງ">ອາບນ້ຳສັດລ້ຽງ</MenuItem>
-                                    <MenuItem value="ປິ່ນປົວສັດລ້ຽງສັດລ້ຽງ">ປິ່ນປົວສັດລ້ຽງ</MenuItem>
+                                    {categoryreport.map((item) => (
+                                      <MenuItem key={item.cat_id} value={item.cat_id}>
+                                        {item.cat_name}
+                                      </MenuItem>
+                                    ))}
                                   </Select>
+
                                   {formErrors.petSize && (
                                     <FormHelperText>
                                       {formErrors.petSize}

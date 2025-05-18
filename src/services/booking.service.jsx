@@ -15,6 +15,11 @@ export const bookingRoom = async (petData, bookData, token) => {
   return response.data;
 };
 
+export const getcategory_service = async () => {
+  const response = await axios.get(`${REACT_APP_API_URL}/customer/get-category-service`);
+  return response.data;
+}
+
 export const getAllBookingbycus_id = async (cus_id, token) => {
   const response = await axios.get(
     `${REACT_APP_API_URL}/booking/get-all?cus_id=${cus_id}`,
