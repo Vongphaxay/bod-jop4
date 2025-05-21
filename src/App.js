@@ -47,7 +47,15 @@ const Layout = () => {
 
   return (
     <>
-      <AppBar position="static" sx={{ backgroundColor: "#E8DCC5", color: "#000", boxShadow: 2 }}>
+      <AppBar 
+        position="fixed" 
+        sx={{ 
+          backgroundColor: "#E8DCC5", 
+          color: "#000", 
+          boxShadow: 2,
+          zIndex: (theme) => theme.zIndex.drawer + 1 
+        }}
+      >
         <Toolbar sx={{ justifyContent: "space-between" }}>
           <Typography
             variant="h6"
@@ -93,10 +101,22 @@ const Layout = () => {
                 anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                 transformOrigin={{ vertical: "top", horizontal: "left" }}
               >
-                <MenuItem onClick={handleClose}>ຝາກສັດລ້ຽງ</MenuItem>
-                <MenuItem onClick={handleClose}>ອາບນ້ຳສັດລ້ຽງ</MenuItem>
-                <MenuItem onClick={handleClose}>ຕັດຂົນສັດລ້ຽງ</MenuItem>
-                <MenuItem onClick={handleClose}>ປິ່ນປົວສັດລ້ຽງ</MenuItem>
+                <MenuItem onClick={() => {
+                  handleClose();
+                  navigate("/Cages");
+                }}>ຝາກສັດລ້ຽງ</MenuItem>
+                <MenuItem onClick={() => {
+                  handleClose();
+                  navigate("/Cages");
+                }}>ອາບນ້ຳສັດລ້ຽງ</MenuItem>
+                <MenuItem onClick={() => {
+                  handleClose();
+                  navigate("/Cages");
+                }}>ຕັດຂົນສັດລ້ຽງ</MenuItem>
+                <MenuItem onClick={() => {
+                  handleClose();
+                  navigate("/Cages");
+                }}>ປິ່ນປົວສັດລ້ຽງ</MenuItem>
               </Menu>
 
               <Button color="inherit" onClick={() => navigate("/reservationlist")}>ລາຍການຈອງ</Button>
@@ -149,6 +169,8 @@ const Layout = () => {
         )}
         </Toolbar>
       </AppBar>
+      {/* Add a placeholder toolbar to prevent content from hiding under AppBar */}
+      <Toolbar />
     </>
   );
 };

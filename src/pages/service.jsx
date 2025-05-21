@@ -186,7 +186,6 @@ const ClinicCarousel = () => {
     <Typography>1. ກວດສອບຂະໜາດສັດລ້ຽງຂອງທ່ານກ່ອນທີ່ຈະເລືອກກົງ</Typography>
     <Typography>2. ເລືອກ ແລະ ກວດສອບວັນທີ ທີ່ຈະຈອງໃຫ້ຖືກຕ້ອງກ່ອນກົດຢຶນຢັນ</Typography>
     <Typography>3. ເມື່ອຮອດມື້ທີ່ເລີ່ມຝາກທ່ານຕ້ອງນຳສັດລ້ຽງມາເອງ</Typography>
-    <Typography>4. ໃນກໍລະນີທີ່ທ່ານຍົກເລີກບິນການຈອງ ທາງເຮົາຈະບໍ່ຄືນເງິນຄ່າຈອງໃຫ້</Typography>
   </Box>
 </DialogContent>
 
