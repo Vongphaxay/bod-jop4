@@ -106,7 +106,7 @@ const ClinicCarousel = () => {
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', mt: 1.5 }}>
                 {/* <Rating value={clinic.rating} precision={0.1} readOnly /> */}
-                <Typography sx={{ ml: 1, fontWeight: 500 }}>{clinic.rating}</Typography>
+                {/* <Typography sx={{ ml: 1, fontWeight: 500 }}>{clinic.rating}</Typography> */}
               </Box>
               <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
                 <Button variant="contained" color="primary" size="small" fullWidth onClick={handleClick}>
@@ -186,6 +186,7 @@ const ClinicCarousel = () => {
     <Typography>1. ກວດສອບຂະໜາດສັດລ້ຽງຂອງທ່ານກ່ອນທີ່ຈະເລືອກກົງ</Typography>
     <Typography>2. ເລືອກ ແລະ ກວດສອບວັນທີ ທີ່ຈະຈອງໃຫ້ຖືກຕ້ອງກ່ອນກົດຢຶນຢັນ</Typography>
     <Typography>3. ເມື່ອຮອດມື້ທີ່ເລີ່ມຝາກທ່ານຕ້ອງນຳສັດລ້ຽງມາເອງ</Typography>
+
   </Box>
 </DialogContent>
 
