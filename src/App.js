@@ -20,6 +20,7 @@ import Cages from "./pages/Cages";
 import Login from "./login/login";
 import Register from "./login/register";
 import ReservationList from "./pages/Reservationlist";
+import Contactpage from "./pages/contract";
 import Cookies from 'js-cookie';
 
 const Layout = () => {
@@ -120,7 +121,7 @@ const Layout = () => {
               </Menu>
 
               <Button color="inherit" onClick={() => navigate("/reservationlist")}>ລາຍການຈອງ</Button>
-              <Button color="inherit">ຕິດຕໍ່ສອບຖາມ</Button>
+              <Button color="inherit" onClick={() => navigate("/contact")}>ຕິດຕໍ່ສອບຖາມ</Button>
             </Box>
           )}
 
@@ -227,6 +228,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/reservationlist" element={<ReservationList />} />
+        <Route path="/contact" element={<Contactpage />} />
       </Routes>
     </BrowserRouter>
   );
