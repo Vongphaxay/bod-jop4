@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Box,
     Container,
@@ -15,7 +16,8 @@ import {
     InputAdornment,
     Chip,
     Alert,
-    Snackbar
+    Snackbar,
+    CardMedia
 } from '@mui/material';
 import {
     Phone,
@@ -36,6 +38,7 @@ import { useTheme } from '@mui/material/styles';
 
 const ContactPage = () => {
     const theme = useTheme();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -70,6 +73,10 @@ const ContactPage = () => {
 
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
+    };
+
+    const handleBookingClick = () => {
+        navigate('/cages');
     };
 
     // Sample staff data
@@ -154,7 +161,7 @@ const ContactPage = () => {
                 <Grid container spacing={4}>
                     {/* Contact Information */}
                     <Grid item xs={12} md={4}>
-                        <Card sx={{ boxShadow: 3, borderRadius: 3, mb: 3 }}>
+                        <Card sx={{ boxShadow: 3, borderRadius: 3, height: '100%' }}>
                             <CardContent sx={{ p: 3 }}>
                                 <Typography variant="h6" fontWeight="bold" color="primary" sx={{ mb: 3 }}>
                                     ຂໍ້ມູນຕິດຕໍ່
@@ -193,7 +200,7 @@ const ContactPage = () => {
                                 <Typography variant="body2" sx={{ mb: 0.5 }}>
                                     ຈັນ - ສຸກ: {clinicInfo.hours.weekdays}
                                 </Typography>
-                                <Typography variant="body2">
+                                <Typography variant="body2" sx={{ mb: 2 }}>
                                     ເສົາ - ອາທິດ: {clinicInfo.hours.weekend}
                                 </Typography>
 
@@ -215,19 +222,60 @@ const ContactPage = () => {
                                 </Box>
                             </CardContent>
                         </Card>
+                    </Grid>
 
-                        {/* Quick Booking */}
-                        <Card sx={{ boxShadow: 3, borderRadius: 3, bgcolor: 'primary.main', color: 'white' }}>
-                            <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                    {/* Clinic Info Card */}
+                    <Grid item xs={12} md={4}>
+                        <Card sx={{ boxShadow: 3, borderRadius: 3, bgcolor: "#F5F2EA", height: '100%' }}>
+                            <CardContent sx={{ p: 3 }}>
+                                <Typography variant="h6" fontWeight="bold" sx={{ color: "#552619", mb: 3, textAlign: 'center' }}>
+                                    ຂໍ້ມູນຄລີນິກ
+                                </Typography>
+                                
+                                {/* รูปภาพแทนที่แผนที่ */}
+                                <Card sx={{ borderRadius: 2, boxShadow: 3, overflow: "hidden", mb: 3 }}>
+                                    <CardMedia
+                                        component="img"
+                                        image="https://scontent.fvte6-1.fna.fbcdn.net/v/t39.30808-6/472231485_615275431066392_5159280437899117111_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=Kq2UAcR6nkIQ7kNvwGBm7Os&_nc_oc=Adn8NqVF0-a3FfYkpw67Mhetw7Oj2jb_o2o3I1nEP4dQ1g-0gpXci3qu9o1rc_aAJn0&_nc_zt=23&_nc_ht=scontent.fvte6-1.fna&_nc_gid=Pxf6zDVTefIOsv6O95QDEQ&oh=00_AfK9RceKxhyXRZg4HFoaNVrlV9hwxcD2ae90gnuqILnbSw&oe=682B3AEA"
+                                        alt="Clinic Location"
+                                        sx={{ width: "100%", height: "150px", objectFit: "cover" }} 
+                                    />
+                                </Card>
+
+                                {/* ข้อมูลคลินิก */}
+                                <Box>
+                                    <Typography variant="h6" sx={{ fontWeight: "bold", color: "#552619", mb: 1 }}>
+                                        DR. P VETERINARY
+                                    </Typography>
+                                    <Typography sx={{ color: "#552619", mb: 2, fontSize: '0.9rem' }}>
+                                        ຄລິນິກ DR. P VETERINARY
+                                        <br />
+                                        ບໍລິການຮັບຝາກສັດລ້ຽງ, ຕັດຂົນສັດລ້ຽງ, ອາບນ້ຳສັດລ້ຽງ ແລະ ປິ່ນປົວສັດລ້ຽງ
+                                    </Typography>
+                                    <Typography sx={{ color: "#552619", fontSize: '0.9rem' }}>
+                                        <strong>ທີ່ຢູ່:</strong> ຄລິນິກ DR. P VETERINARY
+                                        <br />
+                                        ຕັ້ງຢູ່ບ້ານ ດົງປ່າແຫຼບ, ຮ່ອມ 13 (ໜ້າໂຮງຮຽນຫວຽນຢູ)
+                                    </Typography>
+                                </Box>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    {/* Quick Booking */}
+                    <Grid item xs={12} md={4}>
+                        <Card sx={{ boxShadow: 3, borderRadius: 3, bgcolor: 'primary.main', color: 'white', height: '100%' }}>
+                            <CardContent sx={{ p: 3, textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
                                 <CalendarToday sx={{ fontSize: 40, mb: 2 }} />
                                 <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
                                     ຈອງນັດໝາຍ
                                 </Typography>
-                                <Typography variant="body2" sx={{ mb: 2, opacity: 0.9 }}>
+                                <Typography variant="body2" sx={{ mb: 3, opacity: 0.9 }}>
                                     ຈອງເວລາລ່ວງໜ້າເພື່ອຮັບບໍລິການ
                                 </Typography>
                                 <Button
                                     variant="contained"
+                                    onClick={handleBookingClick}
                                     sx={{
                                         bgcolor: 'white',
                                         color: 'primary.main',
