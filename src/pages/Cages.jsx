@@ -285,7 +285,22 @@ const Cages = () => {
   }, []);
 
   const room = cages.map((cage, i) => {
-    const size = i < 4 ? "S" : i < 8 ? "M" : "L";
+    let size = "UNKNOWN";
+
+    switch (parseInt(cage.price)) {
+      case 50000:
+        size = "S";
+        break;
+      case 70000:
+        size = "M";
+        break;
+      case 100000:
+        size = "L";
+        break;
+      default:
+        console.warn(`⚠️ Unknown price for room ${cage.room_name}: ${cage.price}`);
+    }
+
     return {
       id: cage.room_id,
       name: cage.room_name || `ກົງທີ ${i + 1}`,
@@ -294,6 +309,7 @@ const Cages = () => {
       price: cage.price,
     };
   });
+
 
   const groupedCages = {
     S: room.filter((c) => c.size === "S"),
