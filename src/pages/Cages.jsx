@@ -30,6 +30,8 @@ import React, { useEffect, useState } from "react";
 import { bookingRoom, getcategory_service } from "../services/booking.service";
 import { getRoomPet } from "../services/roompet.service";
 
+
+
 const Cages = () => {
   const [cages, setCages] = useState([]);
   const [selectedCage, setSelectedCage] = useState(null);
@@ -146,6 +148,15 @@ const Cages = () => {
     return Math.ceil(difference / (1000 * 3600 * 24));
   };
 
+  const isToday = (someDate) => {
+    const today = new Date();
+    return (
+      someDate.getDate() === today.getDate() &&
+      someDate.getMonth() === today.getMonth() &&
+      someDate.getFullYear() === today.getFullYear()
+    );
+  };
+
   const handleDateChange = (type, date) => {
     setBookingData((prev) => {
       const updated = { ...prev, [type]: date };
@@ -171,6 +182,14 @@ const Cages = () => {
       setFormErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
+  const handleBookingChange2 = (field, value) => {
+    setBookingData((prev) => ({ ...prev, [field]: value }));
+
+    if (formErrors[field]) {
+      setFormErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
 
   const APIBOOKINGROOM = async () => {
     try {
@@ -192,7 +211,7 @@ const Cages = () => {
         cus_id: bookingData.ownerID,
         room_id: bookingData.room_id,
         total: bookingData.price,
-        cat_id: petData.petSize // 👈 this now holds the selected cat_id
+        cat_id: bookingData.cat_id // 👈 this now holds the selected cat_id
       };
 
 
@@ -657,9 +676,7 @@ const Cages = () => {
                             <DatePicker
                               label="ວັນທີເລີ່ມຕົ້ນ"
                               value={bookingData.startDate}
-                              onChange={(date) =>
-                                handleDateChange("startDate", date)
-                              }
+                              onChange={(date) => handleDateChange("startDate", date)}
                               slotProps={{
                                 textField: {
                                   size: "small",
@@ -681,9 +698,7 @@ const Cages = () => {
                             <DatePicker
                               label="ວັນທີສິ້ນສຸດ"
                               value={bookingData.endDate}
-                              onChange={(date) =>
-                                handleDateChange("endDate", date)
-                              }
+                              onChange={(date) => handleDateChange("endDate", date)}
                               slotProps={{
                                 textField: {
                                   size: "small",
@@ -697,6 +712,15 @@ const Cages = () => {
                                 field: { shouldRespectLeadingZeros: true },
                               }}
                               minDate={bookingData.startDate}
+                              maxDate={
+                                isToday(bookingData.startDate)
+                                  ? undefined // เลือกได้ทั้งหมด
+                                  : new Date(
+                                    new Date(bookingData.startDate).setDate(
+                                      new Date(bookingData.startDate).getDate() + 3
+                                    )
+                                  )
+                              }
                               format="dd/MM/yyyy"
                             />
                           </Box>
@@ -874,11 +898,11 @@ const Cages = () => {
                                 >
                                   <InputLabel>ປະເພດບໍລິການ</InputLabel>
                                   <Select
-                                    value={petData.petSize || ""}
+                                    value={bookingData.cat_id || ""}
                                     onChange={(e) => {
                                       const selectedCatId = e.target.value;
-                                      console.log("Selected cat_id:", selectedCatId); // ✅ Will now show a number like 1, 2, etc.
-                                      handlePetChange("petSize", selectedCatId);
+                                      console.log("Selected cat_id:", selectedCatId);
+                                      handleBookingChange2("cat_id", selectedCatId);
                                     }}
                                     label="ປະເພດບໍລິການ"
                                     sx={{ width: "150px" }}
@@ -1071,6 +1095,7 @@ const Cages = () => {
                     </Typography>
                     <Typography sx={{ mt: 1, color: "#5b2b0f" }}>
                       ການຈອງຖືກບັນທຶກແລ້ວ ກົດ OK ເພື່ອປິດໜ້າຕ່າງ
+                      *ໝາຍເຫດ: ໃນກໍລະນີ້ຮອດກຳນົດມື້ຈອງແລ້ວລູກຄ້າຍັງບໍ່ມາ ທາງແອັດມິນຈະຕິດຕໍ່ກັບທາງເບີໂທ*
                     </Typography>
                     <Button
                       variant="contained"
