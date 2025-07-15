@@ -159,12 +159,20 @@ const Cages = () => {
 
   const handleDateChange = (type, date) => {
     setBookingData((prev) => {
-      const updated = { ...prev, [type]: date };
-      updated.days = calculateDays(
-        type === "startDate" ? date : prev.startDate,
-        type === "endDate" ? date : prev.endDate
+      const newBookingData = { ...prev, [type]: date };
+
+      if (type === "startDate") {
+        const newEndDate = new Date(date);
+        newEndDate.setDate(newEndDate.getDate() + 1);
+        newBookingData.endDate = newEndDate;
+      }
+
+      newBookingData.days = calculateDays(
+        newBookingData.startDate,
+        newBookingData.endDate
       );
-      return updated;
+
+      return newBookingData;
     });
   };
 
@@ -711,7 +719,7 @@ const Cages = () => {
                                 },
                                 field: { shouldRespectLeadingZeros: true },
                               }}
-                              minDate={bookingData.startDate}
+                              minDate={new Date(new Date(bookingData.startDate).setDate(new Date(bookingData.startDate).getDate() + 1))}
                               maxDate={
                                 isToday(bookingData.startDate)
                                   ? undefined // เลือกได้ทั้งหมด
