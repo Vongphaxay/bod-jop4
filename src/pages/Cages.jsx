@@ -292,9 +292,9 @@ const Cages = () => {
   const BOOKING_FEE = 20000; // 20,000 kip booking fee per day
 
   const cageImages = {
-    S: "https://happyhausthailand.com/wp-content/uploads/2022/04/happyhaus-sing-cat-cage2-rz.jpg",
-    M: "https://happyhausthailand.com/wp-content/uploads/2021/06/dog-cage-M-grey-1.jpg",
-    L: "https://happyhausthailand.com/wp-content/uploads/2021/06/dogcage-L-grey4.jpg",
+    S: "/houpS.jpg",
+    M: "/houpM.jpg",
+    L: "/houpL.jpg",
   };
 
   const APIGETROOMPET = async () => {

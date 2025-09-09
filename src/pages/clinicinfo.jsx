@@ -14,7 +14,7 @@ const ClinicInfo = () => {
           <Card sx={{ borderRadius: 2, boxShadow: 3, overflow: "hidden", maxWidth: 400 }}>
             <CardMedia
               component="img"
-              image="https://scontent.fvte5-1.fna.fbcdn.net/v/t39.30808-6/476331814_638475425413059_1009452581605214338_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeHFgwqCscdg_92V6Akokvb2jOzS1p_A9YeM7NLWn8D1h_MdspkOHjPiDGv_ocZdW6fZ1GnHCzez6-teDTcc4Na-&_nc_ohc=hK_PhV4WohEQ7kNvwGXAePk&_nc_oc=AdmspIusZgn0kTkAxvmvIU1Pcj7Kqwgg0Jqk4bpm3AmzohbjGIlH5Fj84d8zlkga_9k&_nc_zt=23&_nc_ht=scontent.fvte5-1.fna&_nc_gid=FHg-_hjBYUvjkp-tCv8kjg&oh=00_AfRSrBQ1OrFn6AvsOJnxt1zAeH1J6vgK2NcRxGFlR1XiZg&oe=6875759E"
+              image="/catss.jpg"
               alt="Clinic Location"
               sx={{ width: "100%", height: "350px", objectFit: "cover" }} 
             />

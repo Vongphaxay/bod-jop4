@@ -185,7 +185,7 @@ const HomePage = () => (
         backgroundColor: "#fef9f5",
         minHeight: "50vh",
         backgroundImage:
-          "url(https://s3-alpha-sig.figma.com/img/f3ca/8dc4/278987acf5759f2baa576bf781135e14?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=omSpZhnR-j5ZOMHIuPn3OcYRwCDJcK7raeto0KnTUw~6z9pNUdeOTwccgryE~QPf8Vo1Qx1HOIYVnWw0w2SGYvFvaCRlhRf7AB0JXnN~k1NOIgLIk~sZt8xxW2uU1gmAU5KXbXsdE3Q6y-HRmQoGW~Qw6HP1Hkg0XPS0QEEMZha6JtHcWrx~Qajq2lS807KxZ-y~myXXzs6FrSfJjZQrN3hzRii-tjkaB5s6Ff8Nmka3WXRgyeOdxZsX084omrnpp9mqd6puFIzqN2oPl9cnXO9N7hm3R0aTc3BsnjgdeyVGHy7Vc8qcFe46~wjWwqHZOUrC9vEZi4V~vCEzAwy9sg__)",
+          "url(/cat.jpg)",
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundPosition: "center",
